@@ -670,38 +670,38 @@
 }
 .btn-popout:hover{background:rgba(0,229,255,0.06);border-style:solid}
 
-/* Mobile: bottom sheet layout. CSS owns position so JS-saved coords are ignored. */
+/* Mobile: popup window anchored to the TOP so the skill tree stays
+   visible below it. User can still drag it anywhere on screen. */
 @media (max-width:980px){
   .float-panel{
-    top:auto !important;
-    left:8px !important;
-    right:8px !important;
-    bottom:8px !important;
-    width:auto !important;
-    max-height:62vh;
-    border-radius:12px 12px 8px 8px;
+    top:8px;
+    left:8px;
+    right:8px;
+    bottom:auto;
+    width:auto;
+    max-height:50vh;
+    border-radius:8px 8px 12px 12px;
   }
   .float-panel-header{
-    padding:14px 14px 12px;
+    padding:12px 14px 14px;
     position:relative;
   }
-  /* Drag-handle pill above the header text — a stronger affordance on touch */
-  .float-panel-header::before{
+  /* Grip pill BELOW the title row — downward-swipe affordance, doesn't
+     occlude the tap targets above */
+  .float-panel-header::after{
     content:'';
     position:absolute;
-    top:5px;left:50%;transform:translateX(-50%);
+    bottom:3px;left:50%;transform:translateX(-50%);
     width:42px;height:4px;
     background:var(--bio-dim);
     border-radius:2px;
-    opacity:0.7;
+    opacity:0.6;
   }
   .float-panel-title{font-size:13px}
   .float-panel-btn{width:36px;height:36px;font-size:16px}
-  .float-panel-body{padding:14px 16px 20px}
-  /* When the floating sheet is open, push the chat FAB up so it stays reachable */
-  body.float-panel-open .chat-fab{transform:translateY(-58vh)}
+  .float-panel-body{padding:14px 16px 18px}
 }
 @media (max-width:980px) and (display-mode:standalone){
-  /* iOS PWA: respect safe-area on the home-bar side */
-  .float-panel{bottom:calc(8px + env(safe-area-inset-bottom)) !important}
+  /* iOS PWA: respect the safe-area inset (notch / dynamic island) */
+  .float-panel{top:calc(8px + env(safe-area-inset-top))}
 }

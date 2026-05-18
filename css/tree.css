@@ -5,7 +5,7 @@
 
 /* MAIN GRID */
 .main-grid{display:grid;grid-template-columns:1fr 360px;gap:24px}
-@media (max-width:980px){.main-grid{grid-template-columns:1fr}}
+@media (max-width:980px){.main-grid{grid-template-columns:1fr;gap:16px}}
 .tree-column{display:flex;flex-direction:column;gap:0}
 
 /* 3D view container (Three.js) */
@@ -41,6 +41,21 @@
   overflow:auto;
   max-height:85vh;
   min-height:600px;
+  /* Don't trap scroll inside the tree — let it chain to the page so the
+     info panel below stays reachable on phone. */
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+/* Mobile: shrink the tree and lift the page-scroll lock so the user can
+   swipe past the atlas to reach the info panel and chat drawer below. */
+@media (max-width:980px){
+  .tree-wrap{
+    max-height:60vh;
+    min-height:0;
+    /* Tells the browser: single-finger vertical drag = scroll the page,
+       not the canvas. Pinch and horizontal pan still work for panzoom. */
+    touch-action:pan-y;
+  }
 }
 .tree-wrap::before{
   content:'';
@@ -347,6 +362,17 @@
   height:fit-content;
   max-height:85vh;
   overflow-y:auto;
+}
+/* Mobile: drop the sticky pin so the panel sits inline under the tree and
+   uses page-level scroll instead of nesting another scrollable box. */
+@media (max-width:980px){
+  .panel{
+    position:static;
+    max-height:none;
+    overflow-y:visible;
+    padding:18px;
+    scroll-margin-top:12px;
+  }
 }
 .panel::before{content:'';display:block;width:40px;height:2px;background:var(--bio);margin-bottom:16px}
 .panel h2{

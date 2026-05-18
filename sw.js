@@ -2,7 +2,7 @@
    Strategy: cache-first for app shell + CDN libs, network passthrough for
    Anthropic API. Bump CACHE_VERSION on each release to evict stale caches. */
 
-const CACHE_VERSION = 'atlas-v3.5.1';
+const CACHE_VERSION = 'atlas-v3.5.2-mobile-nav';
 const APP_SHELL = [
   './',
   './index.html',

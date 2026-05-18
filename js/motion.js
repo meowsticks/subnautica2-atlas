@@ -221,6 +221,9 @@ function initPanzoom(){
     contain: false,
     cursor: 'grab',
     excludeClass: 'node', // never start a pan from a node click
+    // Mobile: let the browser handle single-finger vertical drags so the page
+    // can scroll past the atlas. Panzoom still gets pinch + horizontal pan.
+    touchAction: 'pan-y',
   });
   const wrap = document.querySelector('.tree-wrap');
   if(wrap){

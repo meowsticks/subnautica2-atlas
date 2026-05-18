@@ -363,6 +363,16 @@ function selectNode(id){
   saveSelected();
   // v3.5: refresh the chat drawer's context line if it's open
   if(window.updateChatContext) window.updateChatContext();
+  // Mobile: pull the info panel into view so the user doesn't have to hunt
+  // for it below the tree. Skipped on tablet/desktop (single column only).
+  if(window.matchMedia && window.matchMedia('(max-width: 980px)').matches){
+    const panel = document.getElementById('panel');
+    if(panel && panel.scrollIntoView){
+      requestAnimationFrame(() => {
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  }
 }
 
 async function toggleNode(id){

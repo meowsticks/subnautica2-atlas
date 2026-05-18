@@ -1,0 +1,25 @@
+{
+  "name": "subnautica2-survivors-atlas",
+  "version": "3.4.0",
+  "description": "Interactive PoE-style skill tree for Subnautica 2 progression on Planet Proteus. Static HTML/CSS/JS atlas with optional GSAP cinematic transitions, panzoom canvas, Three.js 3D view, and Tauri desktop overlay.",
+  "private": true,
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.5.0"
+  },
+  "keywords": [
+    "subnautica-2",
+    "skill-tree",
+    "atlas",
+    "tauri",
+    "gsap",
+    "panzoom",
+    "three.js"
+  ],
+  "license": "MIT"
+}

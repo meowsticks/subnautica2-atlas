@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<!-- Survivor's Atlas v3.4 · Subnautica 2 (Planet Proteus) · last-updated 2026-05-18 · GSAP + panzoom + Three.js + Tauri -->
+<!--
+  Layered architecture (see README §Layered Architecture):
+    L1 data-content      → js/data.js          (atlas-updater)
+    L2 node-tree-engine  → js/engine.js        (atlas-updater)
+    L3 visual-identity   → css/base.css + css/header.css + assets/logo.svg
+                                                (atlas-visual-identity)
+    L4 creature-ecosystem→ css/creatures.css + js/creatures.js
+                                                (atlas-creature-curator)
+    L5 ui-motion         → css/tree.css + css/motion.css + js/motion.js
+                                                (atlas-motion-director)
+    L6 audio-preserved   → js/audio.js         (LOCKED)
+    L7 icons-flora       → js/icons.js         (atlas-icon-smith)
+    L8 deploy-perf       → css/accessibility.css + perf budget
+                                                (atlas-deploy-perf)
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subnautica 2 — Survivor's Atlas v3</title>
+<link rel="preload" href="assets/logo.svg" as="image" type="image/svg+xml">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/header.css">
+<link rel="stylesheet" href="css/tree.css">
+<link rel="stylesheet" href="css/creatures.css">
+<link rel="stylesheet" href="css/motion.css">
+<link rel="stylesheet" href="css/accessibility.css">
+<!-- v3.4 cinematic + interaction plugins (CDN; all gracefully no-op if blocked) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://unpkg.com/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+  <a class="atlas-logo" href="#top" aria-label="Survivor's Atlas — back to top">
+    <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Survivor's Atlas logo">
+      <defs>
+        <linearGradient id="atlasGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#4dd0e1"/>
+          <stop offset="0.55" stop-color="#00e5ff"/>
+          <stop offset="1" stop-color="#ff6b35"/>
+        </linearGradient>
+        <radialGradient id="atlasCore" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+          <stop offset="1" stop-color="#00e5ff" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <polygon points="60,6 110,32 110,88 60,114 10,88 10,32"
+               fill="none" stroke="url(#atlasGrad)" stroke-width="2.6" stroke-linejoin="round"/>
+      <polygon points="60,14 102,36 102,84 60,106 18,84 18,36"
+               fill="none" stroke="rgba(0,229,255,0.25)" stroke-width="1"/>
+      <path class="triangle" d="M38 40 L82 40 L60 92 Z"
+            fill="none" stroke="#00e5ff" stroke-width="1.8"
+            stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="60" cy="58" r="22" fill="url(#atlasCore)"/>
+      <circle cx="60" cy="58" r="3.5" fill="#00e5ff"/>
+      <circle class="ring" cx="60" cy="58" r="10" fill="none" stroke="#00e5ff" stroke-width="1.5" opacity="0.7"/>
+      <circle class="ring r2" cx="60" cy="58" r="10" fill="none" stroke="#4dd0e1" stroke-width="1.2" opacity="0.5"/>
+      <circle class="ring r3" cx="60" cy="58" r="10" fill="none" stroke="#ff6b35" stroke-width="1" opacity="0.4"/>
+      <g font-family="Cinzel, serif" font-weight="900" font-size="12" fill="#ff6b35" text-anchor="middle" opacity="0.85">
+        <text x="60" y="103" letter-spacing="2">II</text>
+      </g>
+    </svg>
+  </a>
+  <div class="title-block">
+    <h1>SURVIVOR'S ATLAS</h1>
+    <div class="subtitle">Subnautica <span class="accent">II</span> · Progression Tree · v3</div>
+    <div class="now-diving">Now Diving: <span class="era-name" id="activeEraName">— PROLOGUE —</span></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn toggle" id="soundBtn" onclick="toggleSound()">♪ Sound: Off</button>
+    <button class="btn toggle" id="tree3dBtn" onclick="toggle3D()">◈ 3D View</button>
+    <button class="btn" id="resetZoomBtn" onclick="resetPanzoom()">⊕ Reset Zoom</button>
+    <button class="btn" id="updateBtn" onclick="checkForUpdates()">⟲ Check for Updates</button>
+    <button class="btn danger" onclick="resetProgress()">Reset</button>
+  </div>
+</header>
+
+<div class="stats-bar" id="statsBar"></div>
+
+<div class="legend" style="margin-bottom:20px">
+  <div class="legend-item"><span class="legend-dot locked"></span> Locked</div>
+  <div class="legend-item"><span class="legend-dot available"></span> Available</div>
+  <div class="legend-item"><span class="legend-dot completed"></span> Acquired</div>
+  <div class="legend-item">Click nodes · auto-saves · sound on click</div>
+</div>
+
+<div class="main-grid">
+  <div class="tree-column">
+    <div class="tree-wrap">
+      <div class="tree-canvas" id="canvas">
+        <svg class="connections" id="connections" viewBox="0 0 1500 2200" preserveAspectRatio="none"></svg>
+        <div id="eraBanners"></div>
+        <div id="nodes"></div>
+      </div>
+    </div>
+    <!-- 3D view container (hidden by default; toggled by toggle3D()) -->
+    <div id="tree3dContainer" class="tree3d-wrap" style="display:none"></div>
+  </div>
+
+  <aside class="panel" id="panel">
+    <div class="empty-state">Select a node on the tree to view its description, prerequisites, and survival tips.</div>
+  </aside>
+</div>
+
+<div class="update-panel" id="updatePanel">
+  <h3>⟲ Latest Intel</h3>
+  <div class="update-content" id="updateContent"></div>
+</div>
+
+</div>
+
+<!-- Load order matters: lowest-dependency modules first -->
+<script src="js/audio.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/data.js"></script>
+<script src="js/creatures.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/motion.js"></script>
+<script src="js/tree3d.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>

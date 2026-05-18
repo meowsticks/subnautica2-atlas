@@ -1,0 +1,32 @@
+/* =========== ACCESSIBILITY OVERRIDES (L8) ===========
+   prefers-reduced-motion respect. Owned by `atlas-deploy-perf`.
+   Load this LAST so its overrides win. */
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration:0.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.01ms !important;
+    scroll-behavior:auto !important;
+  }
+
+  /* Keep static visuals but kill ambient motion */
+  body::before{animation:none}
+  .particle{display:none}
+  .creature-layer{display:none}
+  .atlas-logo{animation:none}
+  .atlas-logo .ring,
+  .atlas-logo .triangle{animation:none}
+  .node.available{animation:none}
+  .era-banner.active{animation:none;box-shadow:0 0 20px var(--era-accent, var(--bio))}
+  .connection-flow.show{animation:none}
+  .now-diving .era-name{animation:none}
+}
+
+/* Focus styles for keyboard nav */
+.node:focus-visible,
+.btn:focus-visible,
+.atlas-logo:focus-visible{
+  outline:2px solid var(--bio);
+  outline-offset:4px;
+}

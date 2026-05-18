@@ -1,0 +1,556 @@
+/* =========== TREE LAYER (L5) ===========
+   Tree canvas, era banners, connections, nodes, side panel, update panel.
+   Owned by `atlas-motion-director` (states/animations) and `atlas-updater`
+   (layout structure). */
+
+/* MAIN GRID */
+.main-grid{display:grid;grid-template-columns:1fr 360px;gap:24px}
+@media (max-width:980px){.main-grid{grid-template-columns:1fr}}
+.tree-column{display:flex;flex-direction:column;gap:0}
+
+/* 3D view container (Three.js) */
+.tree3d-wrap{
+  background:linear-gradient(180deg, rgba(5,18,38,0.7), rgba(2,6,13,0.9));
+  border:1px solid var(--bio-dim);
+  position:relative;
+  min-height:85vh;
+  max-height:85vh;
+  overflow:hidden;
+}
+.tree3d-wrap canvas{display:block;cursor:grab}
+.tree3d-wrap canvas:active{cursor:grabbing}
+.tree3d-wrap::before{
+  content:'DRAG to rotate · SCROLL to zoom · CLICK node to select';
+  position:absolute;
+  bottom:10px;left:50%;
+  transform:translateX(-50%);
+  font-family:'Rajdhani',sans-serif;
+  font-size:10px;
+  letter-spacing:0.3em;
+  color:var(--text-dim);
+  text-transform:uppercase;
+  pointer-events:none;
+  z-index:5;
+}
+
+/* TREE CANVAS */
+.tree-wrap{
+  background:linear-gradient(180deg, rgba(5,18,38,0.4), rgba(2,6,13,0.7));
+  border:1px solid var(--bio-dim);
+  position:relative;
+  overflow:auto;
+  max-height:85vh;
+  min-height:600px;
+}
+.tree-wrap::before{
+  content:'';
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(77,208,225,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(77,208,225,0.04) 1px, transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;
+}
+.tree-canvas{position:relative;width:1500px;height:2200px}
+
+/* ERA BANNERS */
+.era-banner{
+  position:absolute;
+  left:20px;right:20px;
+  height:90px;
+  display:flex;
+  align-items:center;
+  padding:0 32px;
+  overflow:hidden;
+  border-top:1px solid var(--bio-dim);
+  border-bottom:1px solid var(--bio-dim);
+  background:linear-gradient(180deg, var(--era-tint, rgba(0,229,255,0.04)), transparent 60%, var(--era-tint, rgba(0,229,255,0.04)));
+}
+.era-banner::before{
+  content:'';
+  position:absolute;inset:0;
+  background:var(--era-bg);
+  opacity:0.4;
+  z-index:0;
+}
+.era-banner .era-content{
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  gap:24px;
+  width:100%;
+}
+.era-banner .era-roman{
+  font-family:'Cinzel',serif;
+  font-weight:900;
+  font-size:62px;
+  line-height:1;
+  color:var(--era-accent, var(--bio));
+  text-shadow:0 0 30px var(--era-accent, var(--bio));
+  letter-spacing:0;
+  min-width:80px;
+}
+.era-banner .era-text{flex:1}
+.era-banner .era-title{
+  font-family:'Cinzel',serif;
+  font-weight:700;
+  font-size:24px;
+  letter-spacing:0.15em;
+  color:var(--text);
+  text-shadow:0 2px 12px rgba(0,0,0,0.5);
+}
+.era-banner .era-meta{
+  font-size:11px;
+  letter-spacing:0.4em;
+  text-transform:uppercase;
+  color:var(--text-dim);
+  margin-top:6px;
+}
+.era-banner .era-depth{
+  font-family:'Cinzel',serif;
+  font-weight:700;
+  font-size:18px;
+  color:var(--era-accent, var(--bio));
+  letter-spacing:0.1em;
+  padding:6px 16px;
+  border:1px solid var(--era-accent, var(--bio));
+  background:rgba(0,0,0,0.4);
+}
+
+.era-banner.active{
+  box-shadow:0 0 40px var(--era-accent, var(--bio)), inset 0 0 60px rgba(0,229,255,0.08);
+  animation:eraActive 4s ease-in-out infinite;
+}
+@keyframes eraActive{
+  0%,100%{box-shadow:0 0 30px var(--era-accent, var(--bio)), inset 0 0 60px rgba(0,229,255,0.06)}
+  50%{box-shadow:0 0 60px var(--era-accent, var(--bio)), inset 0 0 80px rgba(0,229,255,0.12)}
+}
+
+.era-creature{
+  position:absolute;
+  top:50%;
+  left:-80px;
+  transform:translateY(-50%);
+  opacity:0.4;
+  z-index:1;
+  pointer-events:none;
+  animation:swim var(--swim-duration, 18s) linear infinite;
+}
+@keyframes swim{
+  0%{left:-100px;transform:translateY(-50%) scaleX(1)}
+  100%{left:calc(100% + 100px);transform:translateY(-50%) scaleX(1)}
+}
+.era-creature.reverse{animation-direction:reverse}
+
+.era-flora{
+  position:absolute;
+  bottom:0;
+  width:80px;
+  height:60px;
+  opacity:0.35;
+  pointer-events:none;
+  z-index:1;
+  transform-origin:bottom center;
+  animation:sway 5s ease-in-out infinite;
+}
+@keyframes sway{
+  0%,100%{transform:rotate(-6deg)}
+  50%{transform:rotate(6deg)}
+}
+
+/* SVG CONNECTIONS */
+.connections{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.connection{stroke:var(--line-locked);stroke-width:2;fill:none;transition:all 0.4s ease}
+.connection.active{
+  stroke:var(--bio);
+  stroke-width:2;
+  filter:drop-shadow(0 0 4px var(--bio));
+}
+.connection.completed{
+  stroke:var(--gold);
+  stroke-width:2.5;
+  filter:drop-shadow(0 0 6px var(--gold));
+}
+.connection-flow{
+  fill:none;
+  stroke-width:2;
+  stroke-dasharray:5 10;
+  stroke-linecap:round;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 0.4s ease;
+}
+.connection-flow.show{
+  opacity:1;
+  stroke:var(--gold);
+  filter:drop-shadow(0 0 8px var(--gold));
+  animation:flow 2s linear infinite;
+}
+.connection-flow.show.active{
+  stroke:var(--bio);
+  filter:drop-shadow(0 0 8px var(--bio));
+}
+@keyframes flow{
+  from{stroke-dashoffset:0}
+  to{stroke-dashoffset:-30}
+}
+
+/* NODES */
+.node{
+  position:absolute;
+  width:84px;height:84px;
+  transform:translate(-50%,-50%);
+  cursor:pointer;
+  transition:transform 0.2s ease;
+  z-index:5;
+}
+.node:hover{transform:translate(-50%,-50%) scale(1.1)}
+
+.node-hex{
+  width:100%;height:100%;
+  clip-path:polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  transition:all 0.3s ease;
+}
+.node-hex-inner{
+  width:88%;height:88%;
+  clip-path:polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  font-family:'Cinzel',serif;
+  font-weight:700;
+  font-size:9.5px;
+  text-align:center;
+  padding:6px;
+  line-height:1.1;
+  color:var(--text);
+  gap:2px;
+}
+.node-icon{width:26px;height:26px;opacity:0.85}
+.node-icon svg{width:100%;height:100%}
+
+/* Node states */
+.node.locked .node-hex{background:var(--silver-dim)}
+.node.locked .node-hex-inner{background:linear-gradient(135deg,#1a2638,#0a1422);color:var(--text-dim)}
+.node.locked .node-icon{opacity:0.4}
+
+.node.available .node-hex{background:var(--bio);box-shadow:0 0 20px var(--bio-soft),0 0 40px var(--bio-dim)}
+.node.available .node-hex-inner{background:linear-gradient(135deg,#0d2847,#051226);color:var(--bio)}
+.node.available{animation:pulse 2.5s ease-in-out infinite}
+
+.node.completed .node-hex{background:var(--gold);box-shadow:0 0 24px var(--gold-soft),0 0 48px rgba(255,179,71,0.2)}
+.node.completed .node-hex-inner{background:linear-gradient(135deg,#3d2a0a,#1a1605);color:var(--gold)}
+.node.completed .node-icon{color:var(--gold)}
+
+@keyframes pulse{
+  0%,100%{filter:brightness(1)}
+  50%{filter:brightness(1.35)}
+}
+
+.node.notable{width:108px;height:108px}
+.node.notable .node-hex-inner{font-size:10.5px}
+.node.notable .node-icon{width:30px;height:30px}
+.node.keystone{width:140px;height:140px}
+.node.keystone .node-hex-inner{font-size:12px;font-weight:900;letter-spacing:0.05em}
+.node.keystone .node-icon{width:38px;height:38px}
+
+.node.keystone.completed .node-hex{box-shadow:0 0 45px var(--gold-soft),0 0 90px rgba(255,179,71,0.3)}
+.node.keystone.available .node-hex{box-shadow:0 0 36px var(--bio-soft),0 0 72px var(--bio-dim);animation:keystone-aura 5s ease-in-out infinite}
+
+@keyframes keystone-aura{
+  0%,100%{box-shadow:0 0 36px var(--bio-soft),0 0 72px var(--bio-dim)}
+  50%{box-shadow:0 0 60px var(--bio),0 0 120px var(--bio-soft)}
+}
+
+/* ---------------- SELECTED (saved) ---------------- */
+.node.selected{z-index:7}
+.node.selected .node-hex{
+  outline:3px solid #ffffff;
+  outline-offset:5px;
+  box-shadow:0 0 32px rgba(255,255,255,0.5), 0 0 64px var(--bio-soft);
+}
+.node.selected::after{
+  content:'';
+  position:absolute;
+  inset:-18px;
+  border:1.5px dashed var(--bio);
+  border-radius:50%;
+  pointer-events:none;
+  animation:selected-orbit 6s linear infinite;
+  opacity:0.75;
+}
+@keyframes selected-orbit{
+  0%{transform:rotate(0deg)}
+  100%{transform:rotate(360deg)}
+}
+.node.selected .node-tier-badge{background:#fff;color:var(--abyss);border-color:#fff}
+
+/* ---------------- SUGGESTED (next-to-go) ---------------- */
+.node.suggested{z-index:6}
+.node.suggested .node-hex{
+  animation:suggested-pulse 1.6s ease-in-out infinite;
+}
+@keyframes suggested-pulse{
+  0%,100%{filter:drop-shadow(0 0 10px var(--gene))}
+  50%{filter:drop-shadow(0 0 26px var(--gene)) brightness(1.18)}
+}
+.node.suggested::before{
+  content:'NEXT';
+  position:absolute;
+  bottom:-22px;
+  left:50%;
+  transform:translateX(-50%);
+  font-family:'Rajdhani',sans-serif;
+  font-weight:700;
+  font-size:9px;
+  letter-spacing:0.3em;
+  color:var(--gene);
+  background:var(--abyss);
+  border:1px solid var(--gene);
+  padding:2px 8px;
+  text-shadow:0 0 8px var(--gene);
+  white-space:nowrap;
+  z-index:6;
+  box-shadow:0 0 10px var(--gene-soft);
+}
+
+.node-tier-badge{
+  position:absolute;
+  top:-9px;left:50%;
+  transform:translateX(-50%);
+  background:var(--abyss);
+  border:1px solid currentColor;
+  font-size:9px;
+  padding:1px 6px;
+  letter-spacing:0.15em;
+  font-family:'Rajdhani',sans-serif;
+  font-weight:700;
+  white-space:nowrap;
+}
+.node.locked .node-tier-badge{color:var(--silver-dim)}
+.node.available .node-tier-badge{color:var(--bio)}
+.node.completed .node-tier-badge{color:var(--gold)}
+
+/* SIDE PANEL */
+.panel{
+  background:linear-gradient(180deg, rgba(13,40,71,0.5), rgba(5,18,38,0.6));
+  border:1px solid var(--bio-dim);
+  padding:24px;
+  position:sticky;
+  top:24px;
+  height:fit-content;
+  max-height:85vh;
+  overflow-y:auto;
+}
+.panel::before{content:'';display:block;width:40px;height:2px;background:var(--bio);margin-bottom:16px}
+.panel h2{
+  font-family:'Cinzel',serif;
+  font-weight:700;
+  font-size:22px;
+  letter-spacing:0.05em;
+  margin-bottom:6px;
+  line-height:1.15;
+}
+.panel .node-tier{font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--text-dim);margin-bottom:14px}
+.panel .node-type-badge{
+  display:inline-block;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:0.2em;
+  padding:3px 8px;
+  text-transform:uppercase;
+  margin-bottom:14px;
+}
+.panel .node-type-badge.notable{background:var(--bio-dim);color:var(--bio);border:1px solid var(--bio-soft)}
+.panel .node-type-badge.keystone{background:rgba(255,107,53,0.15);color:var(--kraken);border:1px solid rgba(255,107,53,0.4)}
+.panel .node-type-badge.normal{background:rgba(184,197,214,0.08);color:var(--silver);border:1px solid rgba(184,197,214,0.2)}
+
+.panel p.desc{color:var(--text);line-height:1.55;font-size:14px;margin-bottom:18px}
+
+.panel .section-label{
+  font-size:10px;
+  letter-spacing:0.3em;
+  text-transform:uppercase;
+  color:var(--bio);
+  margin:18px 0 10px;
+  padding-top:14px;
+  border-top:1px solid var(--bio-dim);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.panel .section-label::after{content:'';flex:1;height:1px;background:var(--bio-dim)}
+
+.panel .tip-item{
+  padding:8px 0 8px 18px;
+  position:relative;
+  font-size:13.5px;
+  line-height:1.5;
+  color:var(--text-dim);
+  border-bottom:1px dashed rgba(126,150,173,0.15);
+}
+.panel .tip-item:last-child{border-bottom:none}
+.panel .tip-item::before{
+  content:'◆';
+  position:absolute;
+  left:0;top:8px;
+  color:var(--bio);
+  font-size:9px;
+}
+
+.panel .dep-item{
+  font-size:13px;
+  padding:5px 0;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.panel .dep-item .check{color:var(--gold)}
+.panel .dep-item .lock{color:var(--silver-dim)}
+.panel .empty-state{color:var(--text-dim);font-style:italic;text-align:center;padding:40px 20px;font-size:13px}
+
+/* Suggested-next banner inside the panel */
+.suggested-banner{
+  background:linear-gradient(90deg, rgba(74,222,128,0.18), rgba(74,222,128,0.02));
+  border-left:3px solid var(--gene);
+  padding:10px 14px;
+  margin:0 0 18px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:10px;
+  letter-spacing:0.28em;
+  text-transform:uppercase;
+  color:var(--gene);
+}
+.suggested-banner .suggested-arrow{
+  font-size:16px;
+  color:var(--gene);
+  text-shadow:0 0 10px var(--gene-soft);
+  animation:suggested-arrow 1.8s ease-in-out infinite;
+}
+@keyframes suggested-arrow{
+  0%,100%{transform:translateX(0);opacity:0.85}
+  50%{transform:translateX(4px);opacity:1}
+}
+.suggested-banner .suggested-label{flex-shrink:0}
+.suggested-banner .suggested-link{
+  background:none;
+  border:none;
+  font-family:'Cinzel',serif;
+  font-weight:700;
+  font-size:14px;
+  letter-spacing:0.08em;
+  color:#ffffff;
+  cursor:pointer;
+  padding:0;
+  text-transform:none;
+  margin-left:auto;
+  text-align:right;
+  line-height:1.1;
+}
+.suggested-banner .suggested-link:hover{color:var(--gene);text-shadow:0 0 8px var(--gene-soft)}
+
+/* Saved-pill on the selected node's panel title */
+.saved-pill{
+  display:inline-block;
+  font-family:'Rajdhani',sans-serif;
+  font-weight:700;
+  font-size:9px;
+  letter-spacing:0.25em;
+  text-transform:uppercase;
+  color:var(--bio);
+  background:var(--bio-dim);
+  border:1px solid var(--bio-soft);
+  padding:3px 8px;
+  margin-left:8px;
+  vertical-align:middle;
+  text-shadow:0 0 6px var(--bio-soft);
+}
+
+/* =========== WIKI SECTIONS (v3.2) ===========
+   locations / resources / quests rendered below the description. Each section
+   gets its own accent so a player can scan the panel at a glance. */
+
+.panel .section-label.section-locations{color:var(--gene);border-top-color:var(--gene-soft)}
+.panel .section-label.section-locations::after{background:var(--gene-soft)}
+.panel .section-label.section-resources{color:var(--gold);border-top-color:var(--gold-soft)}
+.panel .section-label.section-resources::after{background:var(--gold-soft)}
+.panel .section-label.section-quests{color:var(--kraken);border-top-color:rgba(255,107,53,0.35)}
+.panel .section-label.section-quests::after{background:rgba(255,107,53,0.35)}
+.wiki-marker{font-size:11px;margin-right:4px}
+
+.wiki-item{
+  position:relative;
+  padding:7px 0 7px 18px;
+  font-size:13.5px;
+  line-height:1.5;
+  color:var(--text);
+  border-bottom:1px dashed rgba(126,150,173,0.15);
+}
+.wiki-item:last-child{border-bottom:none}
+.wiki-item::before{
+  position:absolute;
+  left:0;top:8px;
+  font-size:10px;
+  font-weight:700;
+}
+.wiki-location::before{content:'⌖';color:var(--gene);text-shadow:0 0 6px var(--gene-soft)}
+.wiki-resource::before{content:'◈';color:var(--gold);text-shadow:0 0 6px var(--gold-soft)}
+.wiki-quest::before{content:'▶';color:var(--kraken);text-shadow:0 0 6px rgba(255,107,53,0.4)}
+
+/* Category badge — sits beside the type badge */
+.category-badge{
+  display:inline-block;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:0.2em;
+  padding:3px 8px;
+  text-transform:uppercase;
+  margin-left:6px;
+  margin-bottom:14px;
+  vertical-align:middle;
+  border:1px solid currentColor;
+}
+.category-badge.category-biome{color:var(--gene);background:rgba(74,222,128,0.12)}
+.category-badge.category-resource{color:var(--gold);background:rgba(255,179,71,0.12)}
+.category-badge.category-quest{color:var(--kraken);background:rgba(255,107,53,0.15)}
+.category-badge.category-wreck{color:var(--silver);background:rgba(184,197,214,0.1)}
+.category-badge.category-tech{color:var(--bio);background:var(--bio-dim)}
+
+/* Refresh note — flagged content that needs SN2 community sourcing */
+.wiki-refresh{
+  margin:10px 0 16px;
+  padding:8px 12px;
+  background:rgba(255,107,53,0.06);
+  border-left:2px solid var(--kraken);
+  color:var(--text-dim);
+  font-size:11.5px;
+  line-height:1.4;
+  letter-spacing:0.02em;
+  font-style:italic;
+}
+
+.panel-actions{margin-top:20px;display:flex;flex-direction:column;gap:10px}
+.btn-toggle{width:100%;padding:14px;text-align:center}
+.btn-toggle.unmark{color:var(--gold);border-color:var(--gold)}
+.btn-toggle.unmark::before{background:var(--gold)}
+
+/* UPDATE PANEL */
+.update-panel{
+  margin-top:24px;
+  background:linear-gradient(180deg, rgba(13,40,71,0.5), rgba(5,18,38,0.6));
+  border:1px solid var(--bio-dim);
+  padding:24px;
+  display:none;
+}
+.update-panel.show{display:block;animation:fadeUp 0.5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.update-panel h3{font-family:'Cinzel',serif;font-weight:700;font-size:18px;margin-bottom:12px;color:var(--bio)}
+.update-content{color:var(--text);line-height:1.65;font-size:14px;white-space:pre-wrap}

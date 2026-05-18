@@ -1,0 +1,89 @@
+/* =========== BASE LAYER (L3) ===========
+   Palette, fonts, body, caustics, ambient particles, bubble pops.
+   Owned by `atlas-visual-identity`. */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Rajdhani:wght@300;500;700&display=swap');
+
+:root{
+  --abyss:#01030a;
+  --deep:#040f22;
+  --shallow:#0a1f3d;
+  --kelp:#0d2847;
+  --aqua:#4dd0e1;
+  --bio:#00e5ff;
+  --bio-soft:rgba(0,229,255,0.25);
+  --bio-dim:rgba(0,229,255,0.08);
+  --kraken:#ff6b35;
+  --gold:#ffb347;
+  --gold-soft:rgba(255,179,71,0.4);
+  --leviathan:#d62828;
+  --gene:#4ade80;
+  --gene-soft:rgba(74,222,128,0.35);
+  --silver:#b8c5d6;
+  --silver-dim:#465970;
+  --text:#e8f4f8;
+  --text-dim:#7e96ad;
+  --line-locked:rgba(70,89,112,0.35);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  background:radial-gradient(ellipse at 50% 0%, #0a1f3d 0%, #040f22 35%, #01030a 80%);
+  background-attachment:fixed;
+  font-family:'Rajdhani',sans-serif;
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(77,208,225,0.08) 0%, transparent 40%),
+    radial-gradient(circle at 80% 5%, rgba(0,229,255,0.06) 0%, transparent 35%);
+  pointer-events:none;
+  z-index:0;
+  animation:caustics 20s ease-in-out infinite alternate;
+}
+@keyframes caustics{
+  0%{transform:translate(0,0)}
+  100%{transform:translate(20px,15px)}
+}
+
+.particle{
+  position:fixed;
+  width:2px;height:2px;
+  background:var(--bio);
+  border-radius:50%;
+  box-shadow:0 0 6px var(--bio);
+  opacity:0.3;
+  pointer-events:none;
+  z-index:1;
+  animation:drift linear infinite;
+}
+@keyframes drift{
+  from{transform:translateY(110vh) translateX(0)}
+  to{transform:translateY(-10vh) translateX(30px)}
+}
+
+/* BUBBLE POP EFFECTS */
+.bubble-pop{
+  position:fixed;
+  width:var(--size);height:var(--size);
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(77,208,225,0.4) 60%, rgba(0,229,255,0.1));
+  border:1px solid rgba(255,255,255,0.5);
+  box-shadow:0 0 8px rgba(0,229,255,0.4), inset 0 0 4px rgba(255,255,255,0.3);
+  pointer-events:none;
+  z-index:1000;
+  animation:bubblePop 0.9s ease-out forwards;
+}
+@keyframes bubblePop{
+  0%{transform:translate(-50%,-50%) scale(0);opacity:0}
+  15%{transform:translate(-50%,-50%) scale(1);opacity:1}
+  85%{transform:translate(calc(-50% + var(--tx)),calc(-50% + var(--ty))) scale(0.9);opacity:0.7}
+  100%{transform:translate(calc(-50% + var(--tx) * 1.2),calc(-50% + var(--ty) * 1.2)) scale(0);opacity:0}
+}
+
+.container{position:relative;z-index:2;max-width:1500px;margin:0 auto;padding:24px}

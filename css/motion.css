@@ -1,0 +1,105 @@
+/* =========== MOTION KEYFRAMES (L5) ===========
+   Shared cinematic motion not bound to a specific component.
+   Owned by `atlas-motion-director`. */
+
+/* Selected node "breathing" — applied via .node.selected toggle */
+.node.selected .node-hex{
+  animation:selected-pulse 1.2s ease-in-out infinite;
+}
+@keyframes selected-pulse{
+  0%,100%{filter:brightness(1) drop-shadow(0 0 14px var(--bio))}
+  50%{filter:brightness(1.25) drop-shadow(0 0 26px var(--bio))}
+}
+
+/* One-shot shimmer when a node first becomes available */
+.node.just-available .node-hex{
+  animation:available-shimmer 1.6s ease-out 1 forwards;
+}
+@keyframes available-shimmer{
+  0%{filter:brightness(2) drop-shadow(0 0 32px var(--bio))}
+  60%{filter:brightness(1.2) drop-shadow(0 0 16px var(--bio))}
+  100%{filter:brightness(1) drop-shadow(0 0 6px var(--bio))}
+}
+
+/* Button bubble-trail micro-particles (used by motion.js if extended) */
+.bubble-trail{
+  position:absolute;
+  width:4px;height:4px;
+  border-radius:50%;
+  background:rgba(0,229,255,0.6);
+  box-shadow:0 0 6px rgba(0,229,255,0.4);
+  pointer-events:none;
+  animation:bubble-trail 1.1s ease-out forwards;
+}
+@keyframes bubble-trail{
+  from{transform:translate(0,0) scale(1);opacity:0.8}
+  to{transform:translate(var(--tx,0),calc(var(--ty,-30px) - 30px)) scale(0.4);opacity:0}
+}
+
+/* Era-advance flash overlay */
+.era-advance-flash{
+  position:fixed;
+  inset:0;
+  background:radial-gradient(ellipse at center, var(--bio-soft), transparent 70%);
+  pointer-events:none;
+  z-index:998;
+  animation:era-flash 1.6s ease-out forwards;
+}
+@keyframes era-flash{
+  0%{opacity:0}
+  20%{opacity:0.7}
+  100%{opacity:0}
+}
+
+/* Gene-pick burst — fires when a node is picked for leveling.
+   Matches the SN2 Adaptations DNA-helix vibe (green decode). */
+.gene-pick-burst{
+  position:fixed;
+  width:140px;height:140px;
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+  z-index:1001;
+  animation:gene-pick-burst 1.2s cubic-bezier(0.18, 0.9, 0.32, 1) forwards;
+}
+.gene-pick-burst svg{width:100%;height:100%;display:block}
+.gene-pick-burst .strand{stroke:var(--gene);stroke-width:3;fill:none;filter:drop-shadow(0 0 8px var(--gene))}
+.gene-pick-burst .rung{stroke:var(--gene);stroke-width:1.5;opacity:0.7}
+.gene-pick-burst .ring{stroke:var(--gene);stroke-width:1.5;fill:none;opacity:0.5}
+@keyframes gene-pick-burst{
+  0%{transform:translate(-50%,-50%) scale(0.2) rotate(0deg);opacity:0}
+  18%{transform:translate(-50%,-50%) scale(1.1) rotate(40deg);opacity:1}
+  55%{transform:translate(-50%,-50%) scale(1) rotate(160deg);opacity:0.85}
+  100%{transform:translate(-50%,-50%) scale(1.8) rotate(360deg);opacity:0}
+}
+
+/* "Adapted" toast — quick caption that floats up after a pick */
+.gene-pick-toast{
+  position:fixed;
+  transform:translate(-50%,-50%);
+  font-family:'Rajdhani',sans-serif;
+  font-weight:700;
+  font-size:13px;
+  letter-spacing:0.28em;
+  text-transform:uppercase;
+  color:var(--gene);
+  text-shadow:0 0 12px var(--gene-soft);
+  pointer-events:none;
+  z-index:1002;
+  white-space:nowrap;
+  animation:gene-pick-toast 1.6s ease-out forwards;
+}
+@keyframes gene-pick-toast{
+  0%{transform:translate(-50%,-50%) translateY(0);opacity:0}
+  15%{transform:translate(-50%,-50%) translateY(-10px);opacity:1}
+  100%{transform:translate(-50%,-50%) translateY(-60px);opacity:0}
+}
+
+/* Insufficient-points flash for the action button */
+.btn-toggle.insufficient{
+  animation:btn-insufficient 0.6s ease-out;
+}
+@keyframes btn-insufficient{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-6px);box-shadow:0 0 16px rgba(255,107,53,0.5)}
+  60%{transform:translateX(6px);box-shadow:0 0 16px rgba(255,107,53,0.5)}
+}

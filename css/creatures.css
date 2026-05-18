@@ -1,0 +1,276 @@
+/* =========== CREATURE ECOSYSTEM (L4) ===========
+   Floating fauna layer that drifts over the tree canvas.
+   Owned by `atlas-creature-curator`. Behaviors are CSS-driven via the
+   `creature creature-<behavior>` class assigned in js/creatures.js. */
+
+.creature-layer{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:2;
+}
+
+.creature{
+  position:absolute;
+  left:var(--x);
+  top:var(--y);
+  transform:translate(-50%,-50%) scale(var(--scale,1));
+  opacity:0.55;
+  pointer-events:none;
+  will-change:transform,opacity;
+  filter:drop-shadow(0 0 8px rgba(0,229,255,0.15));
+}
+.creature svg{display:block}
+
+/* ---------------- BEHAVIORS ---------------- */
+
+.creature-drift{
+  animation:creature-drift var(--drift-duration,22s) ease-in-out var(--drift-delay,0s) infinite alternate;
+}
+@keyframes creature-drift{
+  0%{transform:translate(-50%,-50%) scale(var(--scale,1)) translateX(-60px)}
+  100%{transform:translate(-50%,-50%) scale(var(--scale,1)) translateX(60px)}
+}
+
+.creature-slow_drift{
+  animation:creature-slow-drift calc(var(--drift-duration,22s) * 1.6) ease-in-out var(--drift-delay,0s) infinite alternate;
+  opacity:0.4;
+}
+@keyframes creature-slow-drift{
+  0%{transform:translate(-50%,-50%) scale(var(--scale,1)) translateX(-180px)}
+  100%{transform:translate(-50%,-50%) scale(var(--scale,1)) translateX(180px)}
+}
+
+.creature-idle{
+  animation:creature-idle 6s ease-in-out var(--drift-delay,0s) infinite alternate;
+}
+@keyframes creature-idle{
+  0%{transform:translate(-50%,-50%) scale(var(--scale,1)) translateY(-6px)}
+  100%{transform:translate(-50%,-50%) scale(var(--scale,1)) translateY(6px)}
+}
+
+.creature-idle_cluster{
+  animation:creature-idle-cluster 5s ease-in-out var(--drift-delay,0s) infinite alternate;
+}
+@keyframes creature-idle-cluster{
+  0%{transform:translate(-50%,-50%) scale(var(--scale,1)) translate(-12px,-4px)}
+  100%{transform:translate(-50%,-50%) scale(var(--scale,1)) translate(12px,4px)}
+}
+
+.creature-pass_behind{
+  animation:creature-pass var(--drift-duration,32s) linear var(--drift-delay,0s) infinite;
+  opacity:0.25;
+  z-index:1;
+}
+@keyframes creature-pass{
+  0%{transform:translate(-150%,-50%) scale(var(--scale,1))}
+  100%{transform:translate(150%,-50%) scale(var(--scale,1))}
+}
+
+.creature-drift_deep{
+  animation:creature-deep var(--drift-duration,40s) ease-in-out var(--drift-delay,0s) infinite alternate;
+  opacity:0.3;
+}
+@keyframes creature-deep{
+  0%{transform:translate(-50%,-50%) scale(var(--scale,1)) translate(-220px,-40px)}
+  100%{transform:translate(-50%,-50%) scale(var(--scale,1)) translate(220px,40px)}
+}
+
+.creature-dormant{
+  opacity:0.35;
+  animation:creature-dormant 9s ease-in-out var(--drift-delay,0s) infinite alternate;
+}
+@keyframes creature-dormant{
+  0%,80%{transform:translate(-50%,-50%) scale(var(--scale,1))}
+  100%{transform:translate(-50%,-50%) scale(calc(var(--scale,1) * 1.04))}
+}
+
+.creature-teleport{
+  animation:creature-teleport 5s steps(1,end) var(--drift-delay,0s) infinite;
+  opacity:0;
+}
+@keyframes creature-teleport{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(0.6)}
+  10%{opacity:0.7;transform:translate(-50%,-50%) scale(1)}
+  35%{opacity:0.6;transform:translate(-50%,-50%) scale(1)}
+  40%{opacity:0;transform:translate(40%,-50%) scale(0.6)}
+  70%{opacity:0;transform:translate(160%,-50%) scale(0.6)}
+  80%{opacity:0.6;transform:translate(160%,-50%) scale(1)}
+  100%{opacity:0;transform:translate(160%,-50%) scale(0.6)}
+}
+
+.creature-jet_pulse{
+  animation:creature-jet 4s ease-out var(--drift-delay,0s) infinite;
+}
+@keyframes creature-jet{
+  0%{transform:translate(-50%,-50%) scale(var(--scale,1)) translateY(0)}
+  20%{transform:translate(-50%,-50%) scale(var(--scale,1)) translateY(-30px)}
+  60%{transform:translate(-50%,-50%) scale(var(--scale,1)) translateY(10px)}
+  100%{transform:translate(-50%,-50%) scale(var(--scale,1)) translateY(0)}
+}
+
+.creature-sine_weave{
+  animation:creature-sine var(--drift-duration,18s) ease-in-out var(--drift-delay,0s) infinite alternate;
+}
+@keyframes creature-sine{
+  0%{transform:translate(-50%,-50%) scale(var(--scale,1)) translate(-140px,-30px)}
+  50%{transform:translate(-50%,-50%) scale(var(--scale,1)) translate(0,20px)}
+  100%{transform:translate(-50%,-50%) scale(var(--scale,1)) translate(140px,-30px)}
+}
+
+.creature-bottom_dart{
+  animation:creature-bottom-dart var(--drift-duration,14s) ease-in-out var(--drift-delay,0s) infinite alternate;
+}
+@keyframes creature-bottom-dart{
+  0%{transform:translate(-50%,-50%) scale(var(--scale,1)) translate(-200px,30px)}
+  100%{transform:translate(-50%,-50%) scale(var(--scale,1)) translate(200px,30px)}
+}
+
+.creature-ring_pulse{
+  animation:creature-ring 4s ease-in-out var(--drift-delay,0s) infinite alternate;
+}
+@keyframes creature-ring{
+  0%{transform:translate(-50%,-50%) scale(calc(var(--scale,1) * 0.92))}
+  100%{transform:translate(-50%,-50%) scale(calc(var(--scale,1) * 1.08))}
+}
+
+.creature-follow_last{
+  animation:creature-idle 5s ease-in-out var(--drift-delay,0s) infinite alternate;
+}
+
+.creature-majestic{
+  animation:creature-majestic 60s ease-in-out var(--drift-delay,0s) infinite alternate;
+  opacity:0.32;
+}
+@keyframes creature-majestic{
+  0%{transform:translate(-50%,-50%) scale(var(--scale,1)) translateX(-280px)}
+  100%{transform:translate(-50%,-50%) scale(var(--scale,1)) translateX(280px)}
+}
+
+.creature-walk{
+  animation:creature-walk var(--drift-duration,30s) linear var(--drift-delay,0s) infinite;
+}
+@keyframes creature-walk{
+  0%{transform:translate(-150%,-50%) scale(var(--scale,1)) translateY(0)}
+  25%{transform:translate(-50%,-50%) scale(var(--scale,1)) translateY(-4px)}
+  50%{transform:translate(50%,-50%) scale(var(--scale,1)) translateY(0)}
+  75%{transform:translate(100%,-50%) scale(var(--scale,1)) translateY(-4px)}
+  100%{transform:translate(150%,-50%) scale(var(--scale,1)) translateY(0)}
+}
+
+.creature-school{
+  animation:creature-school var(--drift-duration,16s) ease-in-out var(--drift-delay,0s) infinite alternate;
+}
+@keyframes creature-school{
+  0%{transform:translate(-50%,-50%) scale(var(--scale,1)) translate(-120px,calc(var(--seed,0.5) * -40px))}
+  100%{transform:translate(-50%,-50%) scale(var(--scale,1)) translate(120px,calc(var(--seed,0.5) * 40px))}
+}
+
+.creature-high_orbit{
+  animation:creature-high-orbit var(--drift-duration,40s) linear var(--drift-delay,0s) infinite;
+  opacity:0.35;
+}
+@keyframes creature-high-orbit{
+  0%{transform:translate(-150%,-50%) scale(var(--scale,1))}
+  100%{transform:translate(150%,-50%) scale(var(--scale,1))}
+}
+
+.creature-mass_drift{
+  animation:creature-drift var(--drift-duration,24s) ease-in-out var(--drift-delay,0s) infinite alternate;
+  filter:drop-shadow(0 0 12px rgba(0,229,255,0.25));
+}
+
+.creature-anchored_sway{
+  animation:creature-sway 6s ease-in-out var(--drift-delay,0s) infinite alternate;
+}
+@keyframes creature-sway{
+  0%{transform:translate(-50%,-50%) scale(var(--scale,1)) rotate(-6deg)}
+  100%{transform:translate(-50%,-50%) scale(var(--scale,1)) rotate(6deg)}
+}
+
+.creature-upward_spiral{
+  animation:creature-spiral var(--drift-duration,18s) linear var(--drift-delay,0s) infinite;
+}
+@keyframes creature-spiral{
+  0%{transform:translate(-50%,-50%) scale(var(--scale,1)) translate(-60px,40px) rotate(0deg)}
+  100%{transform:translate(-50%,-50%) scale(var(--scale,1)) translate(60px,-40px) rotate(360deg)}
+}
+
+.creature-bio_pulse{
+  animation:creature-bio 4s ease-in-out var(--drift-delay,0s) infinite alternate;
+}
+@keyframes creature-bio{
+  0%{filter:drop-shadow(0 0 8px rgba(255,179,71,0.2));opacity:0.4}
+  100%{filter:drop-shadow(0 0 24px rgba(255,179,71,0.7));opacity:0.7}
+}
+
+.creature-tentacle_flutter{
+  animation:creature-flutter 3.5s ease-in-out var(--drift-delay,0s) infinite alternate;
+}
+@keyframes creature-flutter{
+  0%{transform:translate(-50%,-50%) scale(var(--scale,1)) rotate(-4deg)}
+  100%{transform:translate(-50%,-50%) scale(calc(var(--scale,1) * 1.05)) rotate(4deg)}
+}
+
+/* ---------------- HOVER REACTIONS ---------------- */
+
+.creature.react-dart{
+  animation:react-dart 0.9s ease-out forwards !important;
+}
+@keyframes react-dart{
+  0%{transform:translate(-50%,-50%) scale(var(--scale,1))}
+  100%{transform:translate(calc(-50% - 140px),-50%) scale(calc(var(--scale,1) * 0.85));opacity:0}
+}
+
+.creature.react-pass{
+  animation:react-pass 2.2s linear forwards !important;
+  opacity:0.55 !important;
+}
+@keyframes react-pass{
+  0%{transform:translate(-200%,-50%) scale(var(--scale,1))}
+  100%{transform:translate(200%,-50%) scale(var(--scale,1))}
+}
+
+.creature.react-puff{
+  animation:react-puff 1.4s ease-out forwards !important;
+}
+@keyframes react-puff{
+  0%{transform:translate(-50%,-50%) scale(var(--scale,1));filter:drop-shadow(0 0 8px rgba(255,107,53,0.2))}
+  50%{transform:translate(-50%,-50%) scale(calc(var(--scale,1) * 1.12));filter:drop-shadow(0 0 22px rgba(255,107,53,0.55))}
+  100%{transform:translate(-50%,-50%) scale(var(--scale,1));filter:drop-shadow(0 0 8px rgba(255,107,53,0.2))}
+}
+
+.creature.react-wiggle{
+  animation:react-wiggle 0.9s ease-in-out forwards !important;
+}
+@keyframes react-wiggle{
+  0%,100%{transform:translate(-50%,-50%) scale(var(--scale,1)) rotate(0deg)}
+  25%{transform:translate(-50%,-50%) scale(var(--scale,1)) rotate(-12deg)}
+  75%{transform:translate(-50%,-50%) scale(var(--scale,1)) rotate(12deg)}
+}
+
+.creature.react-dart-at-cursor{
+  animation:react-dart-at-cursor 0.8s ease-out forwards !important;
+}
+@keyframes react-dart-at-cursor{
+  0%{transform:translate(-50%,-50%) scale(var(--scale,1))}
+  50%{transform:translate(-50%,-50%) scale(calc(var(--scale,1) * 1.3)) translate(-40px,-20px)}
+  100%{transform:translate(-50%,-50%) scale(calc(var(--scale,1) * 0.9)) translate(80px,40px);opacity:0}
+}
+
+/* SONAR RIPPLE (from motion.js) */
+.sonar-ripple{
+  position:fixed;
+  width:30px;height:30px;
+  border:2px solid var(--bio);
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  z-index:999;
+  opacity:0.9;
+  animation:sonar-ripple 1.3s ease-out forwards;
+}
+@keyframes sonar-ripple{
+  0%{transform:translate(-50%,-50%) scale(0.3);opacity:1;box-shadow:0 0 12px var(--bio)}
+  100%{transform:translate(-50%,-50%) scale(6);opacity:0;box-shadow:0 0 0 var(--bio)}
+}

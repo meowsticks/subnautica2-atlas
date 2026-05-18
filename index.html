@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Survivor's Atlas v3.4 · Subnautica 2 (Planet Proteus) · last-updated 2026-05-18 · GSAP + panzoom + Three.js + Tauri -->
+<!-- Survivor's Atlas v3.5 · Subnautica 2 (Planet Proteus) · last-updated 2026-05-18 · GSAP + panzoom + Three.js + Tauri + chat/wiki -->
 <!--
   Layered architecture (see README §Layered Architecture):
     L1 data-content      → js/data.js          (atlas-updater)
@@ -26,6 +26,7 @@
 <link rel="stylesheet" href="css/tree.css">
 <link rel="stylesheet" href="css/creatures.css">
 <link rel="stylesheet" href="css/motion.css">
+<link rel="stylesheet" href="css/chat.css">
 <link rel="stylesheet" href="css/accessibility.css">
 <!-- v3.4 cinematic + interaction plugins (CDN; all gracefully no-op if blocked) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -115,6 +116,26 @@
 
 </div>
 
+<!-- v3.5 chat / wiki drawer -->
+<button class="chat-fab" id="chatFab" onclick="toggleChat()" aria-label="Open atlas chat">💬</button>
+<div class="chat-drawer" id="chatDrawer" role="dialog" aria-label="Atlas chat / wiki">
+  <div class="chat-header">
+    <div class="chat-tabs">
+      <button class="chat-tab active" data-mode="wiki" onclick="setChatMode('wiki')">⌖ Wiki Search</button>
+      <button class="chat-tab" data-mode="claude" onclick="setChatMode('claude')">⟲ Ask Claude</button>
+    </div>
+    <button class="chat-close" onclick="toggleChat()" aria-label="Close">×</button>
+  </div>
+  <div class="chat-context">
+    Era: <strong id="chatContextEra">—</strong> · Selected: <strong id="chatContextNode">none</strong> · Points: <strong class="ctx-points" id="chatContextPoints">0</strong>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" placeholder="Search the atlas — 'Tadpole', 'Sulfur Pyres', 'Quaker'..." onkeydown="if(event.key==='Enter') sendChat()">
+    <button class="chat-send-btn" onclick="sendChat()">Send</button>
+  </div>
+</div>
+
 <!-- Load order matters: lowest-dependency modules first -->
 <script src="js/audio.js"></script>
 <script src="js/icons.js"></script>
@@ -123,6 +144,7 @@
 <script src="js/engine.js"></script>
 <script src="js/motion.js"></script>
 <script src="js/tree3d.js"></script>
+<script src="js/chat.js"></script>
 <script src="js/main.js"></script>
 
 </body>

@@ -361,6 +361,8 @@ function selectNode(id){
   if(sel) sel.classList.add('selected');
   renderPanel();
   saveSelected();
+  // v3.5: refresh the chat drawer's context line if it's open
+  if(window.updateChatContext) window.updateChatContext();
 }
 
 async function toggleNode(id){
@@ -413,6 +415,8 @@ async function toggleNode(id){
   await saveState();
   await savePoints();
   render();
+  // v3.5: refresh chat context
+  if(window.updateChatContext) window.updateChatContext();
 }
 
 function flashInsufficientPoints(){

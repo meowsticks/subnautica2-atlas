@@ -130,6 +130,19 @@
 
 </div>
 
+<!-- v3.6 floating node-intel window: pops up when a node is selected so the
+     skill tree stays visible behind. Drag the header to reposition.
+     Mobile: auto-opens as a bottom sheet. Desktop: opens on demand. -->
+<div class="float-panel" id="floatPanel" role="dialog" aria-label="Selected node intel" hidden>
+  <header class="float-panel-header" id="floatPanelHeader">
+    <span class="float-panel-grip" aria-hidden="true">⋮⋮</span>
+    <span class="float-panel-title" id="floatPanelTitle">Node Intel</span>
+    <button class="float-panel-btn" id="floatPanelDock" type="button" title="Dock back to side panel" aria-label="Dock back to side panel">⊟</button>
+    <button class="float-panel-btn" id="floatPanelClose" type="button" title="Close" aria-label="Close">×</button>
+  </header>
+  <div class="float-panel-body" id="floatPanelBody"></div>
+</div>
+
 <!-- v3.5 chat / wiki drawer -->
 <button class="chat-fab" id="chatFab" onclick="toggleChat()" aria-label="Open atlas chat">💬</button>
 <div class="chat-drawer" id="chatDrawer" role="dialog" aria-label="Atlas chat / wiki">
@@ -162,6 +175,7 @@
 <script src="js/motion.js"></script>
 <script src="js/tree3d.js"></script>
 <script src="js/chat.js"></script>
+<script src="js/float-panel.js"></script>
 <script src="js/main.js"></script>
 
 <script>

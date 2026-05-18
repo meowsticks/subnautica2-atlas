@@ -10,6 +10,41 @@
 let chatMode = 'wiki';
 let chatHistory = []; // [{role:'user'|'claude'|'system'|'error', text:string}]
 const CHAT_STORAGE_KEY = 'subnautica2-chat-v3.5';
+const API_KEY_STORAGE = 'subnautica2-anthropic-key-v3.5';
+
+// =========== ANTHROPIC API KEY (browser-direct mode) ===========
+// The Anthropic API requires:
+//   1. anthropic-version header
+//   2. x-api-key header (your key, sk-ant-...)
+//   3. anthropic-dangerous-direct-browser-access: true (opt-in CORS bypass)
+// Key is stored ONLY in your browser's localStorage. Personal-use atlas, so the
+// browser is the right place; never check the key into git. Get one at:
+// https://console.anthropic.com/settings/keys
+function getApiKey(){
+  try{ return localStorage.getItem(API_KEY_STORAGE) || ''; }catch(e){ return ''; }
+}
+function setApiKey(){
+  const existing = getApiKey();
+  const masked = existing ? existing.slice(0, 10) + '...' + existing.slice(-4) : '';
+  const key = prompt(
+    'Paste your Anthropic API key (sk-ant-...).\n\n' +
+    'Stored ONLY in your browser localStorage — never sent to git or any third party.\n' +
+    'Get a key at: https://console.anthropic.com/settings/keys\n\n' +
+    (existing ? 'Current: ' + masked : 'No key set yet.'),
+    existing
+  );
+  if(key === null) return false;
+  const trimmed = key.trim();
+  if(!trimmed){ localStorage.removeItem(API_KEY_STORAGE); return false; }
+  try{ localStorage.setItem(API_KEY_STORAGE, trimmed); }catch(e){}
+  return true;
+}
+function clearApiKey(){
+  if(!confirm('Clear stored Anthropic API key from this browser?')) return;
+  try{ localStorage.removeItem(API_KEY_STORAGE); }catch(e){}
+  chatHistory.push({ role:'system', text:'API key cleared. Wiki search still works without a key.' });
+  saveChatHistory(); renderChatMessages();
+}
 
 // =========== DRAWER OPEN/CLOSE ===========
 function toggleChat(){
@@ -188,9 +223,21 @@ Game knowledge: SN2 is on Planet Proteus. Vehicles are the Tadpole (chassis: Sco
 
 Answer the player's question in 2-4 short paragraphs. Use web_search if needed for current EA patch info. Be specific and actionable. Reference node names exactly as they appear in their state when relevant.`;
 
+  let apiKey = getApiKey();
+  if(!apiKey){
+    const ok = setApiKey();
+    if(!ok) throw new Error('Anthropic API key required for Ask Claude. Wiki search still works locally without one.');
+    apiKey = getApiKey();
+  }
+
   const response = await fetch("https://api.anthropic.com/v1/messages",{
     method:"POST",
-    headers:{"Content-Type":"application/json"},
+    headers:{
+      "Content-Type":"application/json",
+      "anthropic-version":"2023-06-01",
+      "x-api-key": apiKey,
+      "anthropic-dangerous-direct-browser-access":"true",
+    },
     body:JSON.stringify({
       model:"claude-sonnet-4-20250514",
       max_tokens:900,
@@ -199,6 +246,13 @@ Answer the player's question in 2-4 short paragraphs. Use web_search if needed f
       tools:[{"type":"web_search_20250305","name":"web_search"}],
     }),
   });
+  if(!response.ok){
+    const errText = await response.text();
+    if(response.status === 401){
+      throw new Error('API key rejected (401). Click 🔑 in the chat header to reset it.');
+    }
+    throw new Error('API call failed ('+response.status+'): '+errText.slice(0, 200));
+  }
   const data = await response.json();
   const text = (data.content||[]).filter(b => b.type==='text').map(b => b.text).join('\n\n').trim();
   return text || '(No response.)';
@@ -315,3 +369,6 @@ window.sendChat = sendChat;
 window.jumpToNode = jumpToNode;
 window.clearChat = clearChat;
 window.updateChatContext = updateChatContext;
+window.setApiKey = setApiKey;
+window.clearApiKey = clearApiKey;
+window.getApiKey = getApiKey;

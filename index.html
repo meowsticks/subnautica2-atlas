@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Survivor's Atlas v3.5 · Subnautica 2 (Planet Proteus) · last-updated 2026-05-18 · GSAP + panzoom + Three.js + Tauri + chat/wiki -->
+<!-- Survivor's Atlas v3.5.1 · Subnautica 2 (Planet Proteus) · last-updated 2026-05-18 · CORS-bypass + API key management -->
 <!--
   Layered architecture (see README §Layered Architecture):
     L1 data-content      → js/data.js          (atlas-updater)
@@ -20,7 +20,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Subnautica 2 — Survivor's Atlas v3</title>
-<link rel="preload" href="assets/logo.svg" as="image" type="image/svg+xml">
+<!-- Logo SVG is inlined in the header below, so we don't preload assets/logo.svg -->
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/header.css">
 <link rel="stylesheet" href="css/tree.css">
@@ -124,7 +124,10 @@
       <button class="chat-tab active" data-mode="wiki" onclick="setChatMode('wiki')">⌖ Wiki Search</button>
       <button class="chat-tab" data-mode="claude" onclick="setChatMode('claude')">⟲ Ask Claude</button>
     </div>
-    <button class="chat-close" onclick="toggleChat()" aria-label="Close">×</button>
+    <div style="display:flex;gap:6px">
+      <button class="chat-close" onclick="setApiKey()" aria-label="Set API key" title="Set Anthropic API key">🔑</button>
+      <button class="chat-close" onclick="toggleChat()" aria-label="Close">×</button>
+    </div>
   </div>
   <div class="chat-context">
     Era: <strong id="chatContextEra">—</strong> · Selected: <strong id="chatContextNode">none</strong> · Points: <strong class="ctx-points" id="chatContextPoints">0</strong>

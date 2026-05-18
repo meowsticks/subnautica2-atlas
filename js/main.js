@@ -38,10 +38,33 @@ Search the web for the LATEST Subnautica 2 community tips, route optimizations, 
 
 Keep it tight: 3 short sections, plain text, no markdown headers, no preamble.`;
 
+  // v3.5.1: Anthropic API requires key + dangerous-direct-browser-access header
+  // when called from a regular browser origin (the artifact-sandboxed proxy is
+  // not available here on self-hosted localhost / Pages / Tauri).
+  let apiKey = '';
+  try{ apiKey = localStorage.getItem('subnautica2-anthropic-key-v3.5') || ''; }catch(e){}
+  if(!apiKey){
+    if(window.setApiKey){
+      const ok = window.setApiKey();
+      if(ok) apiKey = (localStorage.getItem('subnautica2-anthropic-key-v3.5') || '');
+    }
+    if(!apiKey){
+      content.innerHTML = `<span style="color:var(--kraken)">Update failed: need an Anthropic API key. Click the 💬 chat button → 🔑 to set one. Or skip — the local atlas works fully offline.</span>`;
+      btn.disabled = false;
+      btn.innerHTML = '⟲ Check for Updates';
+      return;
+    }
+  }
+
   try{
     const response = await fetch("https://api.anthropic.com/v1/messages",{
       method:"POST",
-      headers:{"Content-Type":"application/json"},
+      headers:{
+        "Content-Type":"application/json",
+        "anthropic-version":"2023-06-01",
+        "x-api-key": apiKey,
+        "anthropic-dangerous-direct-browser-access":"true",
+      },
       body:JSON.stringify({
         model:"claude-sonnet-4-20250514",
         max_tokens:1000,
@@ -49,6 +72,10 @@ Keep it tight: 3 short sections, plain text, no markdown headers, no preamble.`;
         tools:[{"type":"web_search_20250305","name":"web_search"}]
       })
     });
+    if(!response.ok){
+      const errText = await response.text();
+      throw new Error('('+response.status+') '+errText.slice(0, 200));
+    }
     const data = await response.json();
     const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n\n').trim();
     content.innerText = text || 'No updates returned. Try again in a moment.';

@@ -4,7 +4,7 @@
 // Preservation: never delete node IDs (use deprecated:true), never shift x/y of
 // existing nodes without explicit reason, preserve 5-tier era structure, keystones.
 
-const VERSION = 'v3.5';
+const VERSION = 'v3.5.1';
 const VERSION_DATE = '2026-05-18';
 
 // =========== ERAS — Subnautica 2 / Planet Proteus ===========

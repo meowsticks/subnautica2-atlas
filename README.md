@@ -5,41 +5,40 @@ A PoE-style interactive skill tree for Subnautica 2 progression. Fully static, n
 ---
 
 ## Live atlas
-After setup: `https://<your-username>.github.io/subnautica2-atlas/`
+After setup: `https://meowsticks.github.io/subnautica2-atlas/`
 
 ---
 
 ## What this is
 
-- A single-file HTML app (`index.html`) styled like Path of Exile's skill tree but themed for Subnautica 2
-- Hex nodes, animated era banners, bubble-pop sound effects, flowing connections between unlocked nodes
-- Progress saves to your browser's `localStorage` — survives refreshes and closes
-- 35+ nodes across 6 tiers (Prologue through The Abyss)
-- Updates flow through the **atlas-updater** Claude skill — no automatic API calls, no token drain
+- A modular HTML/CSS/JS web app styled like Path of Exile's skill tree but themed for Subnautica 2 (Planet Proteus)
+- Hex nodes, animated era banners, bubble-pop + gene-pick sound effects, flowing connections between unlocked nodes
+- 26 SN1+SN2 creatures drifting across the canvas with hover-react animations
+- GSAP cinematic era transitions · panzoom canvas · Three.js 3D view · Tauri desktop overlay scaffold
+- Progress + selection + skill points save to your browser's `localStorage` — survives refreshes and closes
+- 48 nodes across 6 eras (Prologue → Kelp Forest → Coral Gardens → Sulfur Pyres → Sparse Plains → Red Grass Mesa & Void)
+- 12 wiki-rich nodes with locations, resources, quest hooks (web-verified against Reddit, Steam, Unknown Worlds devblogs, major SN2 wikis)
+- Updates flow through the **atlas-updater** + plugin skills — no automatic API calls, no token drain
 
 ---
 
 ## Setup (one-time)
 
-### 1. Get the repo on GitHub
+### 1. Push to GitHub (repo already exists at meowsticks/subnautica2-atlas)
+The local repo is already initialized at commit `2dc43ce`. From the project root:
 ```bash
-# Option A: push from your machine
-git init
-git add .
-git commit -m "atlas: initial v2.0"
-git branch -M main
-git remote add origin https://github.com/<you>/subnautica2-atlas.git
+git remote add origin https://github.com/meowsticks/subnautica2-atlas.git
 git push -u origin main
 ```
-
-Or just upload the folder via GitHub's web UI.
 
 ### 2. Enable GitHub Pages
 1. Repo Settings → Pages
 2. **Source:** Deploy from a branch
 3. **Branch:** `main` · folder: `/ (root)`
 4. Save. Wait ~1 minute.
-5. Atlas is live at `https://<you>.github.io/subnautica2-atlas/`
+5. Atlas is live at `https://meowsticks.github.io/subnautica2-atlas/`
+
+> **Note:** GitHub Pages on free accounts requires a **Public** repo. If you created the repo as Private, flip to Public in Settings → General → Danger Zone → Change visibility, or the Pages tab will refuse to deploy.
 
 ### 3. Install the atlas-updater skill
 Copy `skills/atlas-updater/` into your Claude skills directory:

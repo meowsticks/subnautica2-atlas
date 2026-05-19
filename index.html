@@ -18,8 +18,22 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Subnautica 2 — Survivor's Atlas v3</title>
+
+<!-- PWA: installable on iOS/Android home screen, runs offline after first load -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#00e5ff" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#06121f">
+<meta name="application-name" content="Atlas">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Atlas">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+
 <!-- Logo SVG is inlined in the header below, so we don't preload assets/logo.svg -->
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/header.css">
@@ -77,6 +91,8 @@
     <button class="btn toggle" id="soundBtn" onclick="toggleSound()">♪ Sound: Off</button>
     <button class="btn toggle" id="tree3dBtn" onclick="toggle3D()">◈ 3D View</button>
     <button class="btn" id="resetZoomBtn" onclick="resetPanzoom()">⊕ Reset Zoom</button>
+    <button class="btn whats-new-btn" id="whatsNewBtn" onclick="toggleWhatsNew()" type="button" title="See what's new in this version">✦ What's New</button>
+    <button class="btn install-btn" id="installAppBtn" onclick="installApp()" hidden>⤓ Install App</button>
     <button class="btn" id="updateBtn" onclick="checkForUpdates()">⟲ Check for Updates</button>
     <button class="btn danger" onclick="resetProgress()">Reset</button>
   </div>
@@ -88,14 +104,14 @@
   <div class="legend-item"><span class="legend-dot locked"></span> Locked</div>
   <div class="legend-item"><span class="legend-dot available"></span> Available</div>
   <div class="legend-item"><span class="legend-dot completed"></span> Acquired</div>
-  <div class="legend-item">Click nodes · auto-saves · sound on click</div>
+  <div class="legend-item">Click to view · Double-click to acquire · auto-saves</div>
 </div>
 
 <div class="main-grid">
   <div class="tree-column">
     <div class="tree-wrap">
       <div class="tree-canvas" id="canvas">
-        <svg class="connections" id="connections" viewBox="0 0 1500 2200" preserveAspectRatio="none"></svg>
+        <svg class="connections" id="connections" viewBox="0 0 1500 2400" preserveAspectRatio="none"></svg>
         <div id="eraBanners"></div>
         <div id="nodes"></div>
       </div>
@@ -114,6 +130,33 @@
   <div class="update-content" id="updateContent"></div>
 </div>
 
+</div>
+
+<!-- v3.7.1 What's New popup: spotlights nodes added in the latest atlas
+     version. Auto-opens on first visit after a version bump; afterwards
+     opened on demand via the ✦ What's New header button. -->
+<div class="whats-new-panel" id="whatsNewPanel" role="dialog" aria-label="What's new" hidden>
+  <header class="whats-new-header">
+    <span class="whats-new-title">✦ What's New in <span id="whatsNewVersion">v?.?.?</span></span>
+    <button class="whats-new-close" id="whatsNewCloseBtn" type="button" onclick="hideWhatsNew()" aria-label="Close">×</button>
+  </header>
+  <div class="whats-new-body" id="whatsNewBody"></div>
+  <footer class="whats-new-footer">
+    <button class="btn" type="button" onclick="markVersionSeen()">Got it · Mark as seen</button>
+  </footer>
+</div>
+
+<!-- v3.6 floating node-intel window: pops up when a node is selected so the
+     skill tree stays visible behind. Drag the header to reposition.
+     Mobile: auto-opens as a bottom sheet. Desktop: opens on demand. -->
+<div class="float-panel" id="floatPanel" role="dialog" aria-label="Selected node intel" hidden>
+  <header class="float-panel-header" id="floatPanelHeader">
+    <span class="float-panel-grip" aria-hidden="true">⋮⋮</span>
+    <span class="float-panel-title" id="floatPanelTitle">Node Intel</span>
+    <button class="float-panel-btn" id="floatPanelDock" type="button" title="Dock back to side panel" aria-label="Dock back to side panel">⊟</button>
+    <button class="float-panel-btn" id="floatPanelClose" type="button" title="Close" aria-label="Close">×</button>
+  </header>
+  <div class="float-panel-body" id="floatPanelBody"></div>
 </div>
 
 <!-- v3.5 chat / wiki drawer -->
@@ -148,7 +191,51 @@
 <script src="js/motion.js"></script>
 <script src="js/tree3d.js"></script>
 <script src="js/chat.js"></script>
+<script src="js/float-panel.js"></script>
+<script src="js/whats-new.js"></script>
 <script src="js/main.js"></script>
+
+<script>
+  // PWA: register service worker for offline support. Same-origin only,
+  // so http://localhost:8000 and GitHub Pages both work; file:// silently skips.
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => { /* no-op */ });
+    });
+  }
+
+  // Desktop install prompt — Chrome / Edge fire 'beforeinstallprompt' when
+  // the page is installable. We stash the event and show our own button so
+  // the prompt fires on a user gesture. iOS Safari doesn't fire this; users
+  // there install via Share → Add to Home Screen.
+  let _deferredInstallPrompt = null;
+  const _installBtn = () => document.getElementById('installAppBtn');
+  const _alreadyInstalled = () =>
+    (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+    window.navigator.standalone === true;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    _deferredInstallPrompt = e;
+    if (!_alreadyInstalled()) {
+      const btn = _installBtn();
+      if (btn) btn.hidden = false;
+    }
+  });
+  window.addEventListener('appinstalled', () => {
+    _deferredInstallPrompt = null;
+    const btn = _installBtn();
+    if (btn) btn.hidden = true;
+  });
+  async function installApp() {
+    if (!_deferredInstallPrompt) return;
+    _deferredInstallPrompt.prompt();
+    try { await _deferredInstallPrompt.userChoice; } catch (_) {}
+    _deferredInstallPrompt = null;
+    const btn = _installBtn();
+    if (btn) btn.hidden = true;
+  }
+  window.installApp = installApp;
+</script>
 
 </body>
 </html>

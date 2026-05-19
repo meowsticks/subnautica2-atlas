@@ -117,6 +117,11 @@ header{
 .btn.danger:hover{box-shadow:0 0 18px rgba(255,107,53,0.35)}
 .btn.toggle.on{color:var(--gold);border-color:var(--gold)}
 .btn.toggle.on::before{background:var(--gold)}
+/* Install-app button — pulses softly while the browser offers PWA install */
+.btn.install-btn{color:var(--gold);border-color:var(--gold);animation:installPulse 2.4s ease-in-out infinite}
+.btn.install-btn::before{background:var(--gold)}
+.btn.install-btn:hover{box-shadow:0 0 18px rgba(229,193,89,0.35)}
+@keyframes installPulse{0%,100%{box-shadow:0 0 0 rgba(229,193,89,0)}50%{box-shadow:0 0 14px rgba(229,193,89,0.35)}}
 .btn-row{display:flex;gap:10px;flex-wrap:wrap}
 
 /* Sound toggle indicator */

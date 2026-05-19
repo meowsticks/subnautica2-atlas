@@ -7,6 +7,15 @@ A PoE-style interactive skill tree for Subnautica 2 progression. Fully static, n
 ## Live atlas
 After setup: `https://meowsticks.github.io/subnautica2-atlas/`
 
+### Install as an app (PWA)
+The atlas ships as a Progressive Web App — fullscreen, own icon, works offline after the first load. Installs on phone *and* desktop.
+
+- **Desktop (Chrome / Edge / Brave):** when the page is installable, an `⤓ Install App` button appears in the header. Click it to install — the atlas opens in its own window with no browser chrome. You can also use the address-bar install icon (the ⊕ on the right of the URL).
+- **iOS (Safari):** open the live URL → Share → **Add to Home Screen** → Add.
+- **Android (Chrome):** open the live URL → ⋮ menu → **Install app** (or **Add to Home screen**) → Install.
+
+After install, launch from the home-screen icon (or Start Menu / Dock / Launchpad on desktop). No browser bar, splash uses the atlas logo. To update: open it once while online — the service worker pulls fresh assets in the background and applies them on next launch.
+
 ---
 
 ## What this is

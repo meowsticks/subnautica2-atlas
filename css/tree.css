@@ -5,7 +5,7 @@
 
 /* MAIN GRID */
 .main-grid{display:grid;grid-template-columns:1fr 360px;gap:24px}
-@media (max-width:980px){.main-grid{grid-template-columns:1fr}}
+@media (max-width:980px){.main-grid{grid-template-columns:1fr;gap:16px}}
 .tree-column{display:flex;flex-direction:column;gap:0}
 
 /* 3D view container (Three.js) */
@@ -41,6 +41,21 @@
   overflow:auto;
   max-height:85vh;
   min-height:600px;
+  /* Don't trap scroll inside the tree — let it chain to the page so the
+     info panel below stays reachable on phone. */
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+/* Mobile: shrink the tree and lift the page-scroll lock so the user can
+   swipe past the atlas to reach the info panel and chat drawer below. */
+@media (max-width:980px){
+  .tree-wrap{
+    max-height:60vh;
+    min-height:0;
+    /* Tells the browser: single-finger vertical drag = scroll the page,
+       not the canvas. Pinch and horizontal pan still work for panzoom. */
+    touch-action:pan-y;
+  }
 }
 .tree-wrap::before{
   content:'';
@@ -51,7 +66,7 @@
   background-size:40px 40px;
   pointer-events:none;
 }
-.tree-canvas{position:relative;width:1500px;height:2200px}
+.tree-canvas{position:relative;width:1500px;height:2400px}
 
 /* ERA BANNERS */
 .era-banner{
@@ -348,6 +363,17 @@
   max-height:85vh;
   overflow-y:auto;
 }
+/* Mobile: drop the sticky pin so the panel sits inline under the tree and
+   uses page-level scroll instead of nesting another scrollable box. */
+@media (max-width:980px){
+  .panel{
+    position:static;
+    max-height:none;
+    overflow-y:visible;
+    padding:18px;
+    scroll-margin-top:12px;
+  }
+}
 .panel::before{content:'';display:block;width:40px;height:2px;background:var(--bio);margin-bottom:16px}
 .panel h2{
   font-family:'Cinzel',serif;
@@ -523,6 +549,216 @@
 .category-badge.category-quest{color:var(--kraken);background:rgba(255,107,53,0.15)}
 .category-badge.category-wreck{color:var(--silver);background:rgba(184,197,214,0.1)}
 .category-badge.category-tech{color:var(--bio);background:var(--bio-dim)}
+/* v3.7 progression-expansion categories */
+.category-badge.category-gear{color:var(--bio);background:rgba(0,229,255,0.1);border:1px solid var(--bio-dim)}
+.category-badge.category-vehicle{color:#c084fc;background:rgba(192,132,252,0.12);border:1px solid rgba(192,132,252,0.3)}
+.category-badge.category-habitat{color:var(--silver);background:rgba(184,197,214,0.12);border:1px solid rgba(184,197,214,0.3)}
+.category-badge.category-biomod{color:#7dd3fc;background:rgba(125,211,252,0.12);border:1px solid rgba(125,211,252,0.3)}
+
+/* =========== NEW-NODE SPOTLIGHT (v3.7.1) ===========
+   Surfaces nodes added in the current VERSION so players notice the batch:
+   - corner flag on the node hex (tree)
+   - pill in the panel title row
+   - "must-read" callout below the description */
+.node.newly-added .node-hex{
+  box-shadow:0 0 0 1px var(--gold), 0 0 18px rgba(255,179,71,0.45);
+}
+.node-new-flag{
+  position:absolute;
+  top:-6px; right:-8px;
+  background:linear-gradient(90deg, var(--gold) 0%, var(--kraken) 100%);
+  color:#0a1929;
+  font-family:'Rajdhani',sans-serif;
+  font-weight:900;
+  font-size:9px;
+  letter-spacing:0.18em;
+  padding:2px 6px;
+  border-radius:3px;
+  z-index:6;
+  pointer-events:none;
+  animation:newFlagPulse 2.4s ease-in-out infinite;
+  text-shadow:0 1px 0 rgba(0,0,0,0.15);
+}
+@keyframes newFlagPulse{
+  0%,100%{box-shadow:0 0 6px rgba(255,179,71,0.5)}
+  50%{box-shadow:0 0 14px var(--kraken), 0 0 6px var(--gold)}
+}
+.new-pill{
+  display:inline-block;
+  vertical-align:middle;
+  margin-left:6px;
+  font-family:'Rajdhani',sans-serif;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  padding:3px 8px;
+  border-radius:3px;
+  color:#0a1929;
+  background:linear-gradient(90deg, var(--gold) 0%, var(--kraken) 100%);
+  white-space:nowrap;
+}
+.new-callout{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  margin:14px 0 18px;
+  padding:12px 14px;
+  background:linear-gradient(90deg, rgba(255,179,71,0.10), rgba(255,107,53,0.06));
+  border-left:3px solid var(--gold);
+  border-radius:0 4px 4px 0;
+  font-size:13px;
+  line-height:1.5;
+  color:var(--text);
+}
+.new-callout-icon{
+  flex-shrink:0;
+  color:var(--gold);
+  font-size:16px;
+  line-height:1;
+  margin-top:1px;
+}
+
+/* Header "✦ What's New" button — gold, dims when version is acknowledged */
+.btn.whats-new-btn{
+  color:var(--gold);
+  border-color:var(--gold);
+}
+.btn.whats-new-btn::before{background:var(--gold)}
+.btn.whats-new-btn:hover{box-shadow:0 0 18px rgba(255,179,71,0.4)}
+
+/* =========== WHAT'S NEW POPUP =========== */
+.whats-new-panel{
+  position:fixed;
+  z-index:80;
+  top:50%; left:50%;
+  transform:translate(-50%, -50%);
+  width:min(640px, calc(100vw - 32px));
+  max-height:calc(100vh - 64px);
+  display:flex;
+  flex-direction:column;
+  background:linear-gradient(180deg, rgba(13,40,71,0.96), rgba(5,18,38,0.98));
+  border:1px solid var(--gold);
+  border-radius:8px;
+  box-shadow:0 24px 80px rgba(0,0,0,0.7), 0 0 60px rgba(255,179,71,0.18);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  overflow:hidden;
+  animation:whatsNewIn 0.22s ease-out;
+}
+.whats-new-panel[hidden]{display:none}
+@keyframes whatsNewIn{from{opacity:0;transform:translate(-50%, -50%) scale(0.96)}to{opacity:1;transform:translate(-50%, -50%) scale(1)}}
+
+.whats-new-header{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 18px;
+  background:linear-gradient(180deg, rgba(255,179,71,0.18), rgba(255,179,71,0.04));
+  border-bottom:1px solid rgba(255,179,71,0.4);
+  flex-shrink:0;
+}
+.whats-new-title{
+  flex:1;
+  font-family:'Cinzel',serif;
+  font-weight:700;
+  font-size:16px;
+  letter-spacing:0.08em;
+  color:var(--gold);
+}
+.whats-new-close{
+  background:transparent;
+  border:1px solid rgba(255,179,71,0.4);
+  color:var(--gold);
+  width:32px;height:32px;
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:4px;
+  cursor:pointer;
+  font-size:18px;
+  padding:0;
+  transition:background 0.15s;
+}
+.whats-new-close:hover{background:rgba(255,179,71,0.12)}
+
+.whats-new-body{
+  padding:18px 22px;
+  overflow-y:auto;
+  flex:1;
+  min-height:0;
+  -webkit-overflow-scrolling:touch;
+}
+.whats-new-intro{
+  margin:0 0 18px;
+  font-size:14px;
+  line-height:1.55;
+  color:var(--text);
+}
+.whats-new-intro strong{color:var(--gold)}
+.whats-new-empty{color:var(--text-dim);text-align:center;padding:30px 10px;font-style:italic}
+
+.whats-new-section{margin-bottom:18px}
+.whats-new-section:last-child{margin-bottom:0}
+.whats-new-section-title{
+  font-family:'Rajdhani',sans-serif;
+  font-weight:700;
+  font-size:11px;
+  letter-spacing:0.28em;
+  text-transform:uppercase;
+  color:var(--bio);
+  margin:0 0 10px;
+  padding-bottom:4px;
+  border-bottom:1px solid var(--bio-dim);
+}
+.whats-new-section-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+@media (max-width:560px){.whats-new-section-grid{grid-template-columns:1fr}}
+.whats-new-item{
+  text-align:left;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--bio-dim);
+  border-left:3px solid var(--gold);
+  color:var(--text);
+  padding:10px 12px;
+  border-radius:0 4px 4px 0;
+  cursor:pointer;
+  font-family:inherit;
+  transition:background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.whats-new-item:hover{background:rgba(0,229,255,0.06);border-color:var(--bio)}
+.whats-new-item:active{transform:scale(0.99)}
+.whats-new-item-head{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.whats-new-tier{
+  font-family:'Cinzel',serif;font-weight:900;font-size:10px;
+  letter-spacing:0.15em;
+  color:var(--gold);
+  padding:2px 6px;
+  border:1px solid rgba(255,179,71,0.3);
+  border-radius:2px;
+}
+.whats-new-item strong{font-family:'Rajdhani',sans-serif;font-size:14px;color:var(--bio)}
+.whats-new-desc{font-size:12px;line-height:1.45;color:var(--text-dim)}
+
+.whats-new-footer{
+  padding:12px 18px;
+  border-top:1px solid var(--bio-dim);
+  display:flex;justify-content:flex-end;
+  flex-shrink:0;
+  background:rgba(5,18,38,0.6);
+}
+
+/* Mobile: take the full screen — easier to read each card */
+@media (max-width:980px){
+  .whats-new-panel{
+    top:8px;left:8px;right:8px;bottom:8px;
+    width:auto;height:auto;
+    transform:none;
+    max-height:none;
+  }
+  @keyframes whatsNewIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+  .whats-new-body{padding:14px 16px}
+  .whats-new-section-grid{grid-template-columns:1fr}
+}
 
 /* Refresh note — flagged content that needs SN2 community sourcing */
 .wiki-refresh{
@@ -554,3 +790,134 @@
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .update-panel h3{font-family:'Cinzel',serif;font-weight:700;font-size:18px;margin-bottom:12px;color:var(--bio)}
 .update-content{color:var(--text);line-height:1.65;font-size:14px;white-space:pre-wrap}
+
+/* =========== FLOAT PANEL (v3.6) ===========
+   Draggable node-intel window. Sits above the tree so the canvas stays
+   visible behind a slight backdrop blur. Mobile = bottom sheet, Desktop =
+   floating window in the top-right. Drag the header to reposition. */
+.float-panel{
+  position:fixed;
+  z-index:60;
+  top:24px;
+  right:24px;
+  width:380px;
+  max-height:calc(100vh - 48px);
+  display:flex;
+  flex-direction:column;
+  background:linear-gradient(180deg, rgba(13,40,71,0.92), rgba(5,18,38,0.95));
+  border:1px solid var(--bio);
+  border-radius:8px;
+  box-shadow:0 18px 48px rgba(0,0,0,0.6), 0 0 32px rgba(0,229,255,0.18);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  overflow:hidden;
+  animation:floatPanelIn 0.18s ease-out;
+}
+.float-panel[hidden]{display:none}
+.float-panel.dragging{animation:none;transition:none;opacity:0.96;box-shadow:0 24px 60px rgba(0,0,0,0.7), 0 0 48px rgba(0,229,255,0.3)}
+@keyframes floatPanelIn{from{opacity:0;transform:translateY(-8px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+.float-panel-header{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;
+  background:linear-gradient(180deg, rgba(0,229,255,0.14), rgba(0,229,255,0.04));
+  border-bottom:1px solid var(--bio-dim);
+  cursor:grab;
+  user-select:none;
+  touch-action:none; /* pointer events drive drag; don't let browser steal them */
+  flex-shrink:0;
+}
+.float-panel-header:active{cursor:grabbing}
+.float-panel-grip{
+  color:var(--bio);
+  font-size:13px;
+  letter-spacing:-1px;
+  opacity:0.75;
+  cursor:grab;
+}
+.float-panel-title{
+  flex:1;
+  font-family:'Rajdhani',sans-serif;
+  font-size:12px;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:var(--bio);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.float-panel-btn{
+  background:transparent;
+  border:1px solid var(--bio-dim);
+  color:var(--bio);
+  width:30px;height:30px;
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:4px;
+  cursor:pointer;
+  font-size:14px;
+  padding:0;
+  flex-shrink:0;
+  transition:background 0.15s, border-color 0.15s;
+}
+.float-panel-btn:hover{background:rgba(0,229,255,0.1);border-color:var(--bio)}
+.float-panel-btn:active{background:rgba(0,229,255,0.18)}
+.float-panel-body{
+  padding:18px 20px;
+  overflow-y:auto;
+  flex:1;
+  min-height:0;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+}
+
+/* Pop-out button in the inline panel */
+.btn-popout{
+  background:transparent;
+  border:1px dashed var(--bio-dim);
+  color:var(--bio);
+  font-size:12px;
+  letter-spacing:0.15em;
+}
+.btn-popout:hover{background:rgba(0,229,255,0.06);border-style:solid}
+
+/* Mobile: popup window anchored to the TOP so the skill tree stays
+   visible below it. User can still drag it anywhere on screen. */
+@media (max-width:980px){
+  .float-panel{
+    top:8px;
+    left:8px;
+    right:8px;
+    bottom:auto;
+    width:auto;
+    max-height:50vh;
+    border-radius:8px 8px 12px 12px;
+  }
+  .float-panel-header{
+    padding:12px 14px 14px;
+    position:relative;
+  }
+  /* Grip pill BELOW the title row — downward-swipe affordance, doesn't
+     occlude the tap targets above */
+  .float-panel-header::after{
+    content:'';
+    position:absolute;
+    bottom:3px;left:50%;transform:translateX(-50%);
+    width:42px;height:4px;
+    background:var(--bio-dim);
+    border-radius:2px;
+    opacity:0.6;
+  }
+  .float-panel-title{font-size:13px}
+  .float-panel-btn{width:36px;height:36px;font-size:16px}
+  .float-panel-body{padding:14px 16px 18px}
+  /* Dock button only makes sense on desktop (inline side panel is visible).
+     On mobile the inline panel is buried below the tree, so hide it. */
+  #floatPanelDock{display:none}
+  /* Same for the inline panel's "Pop Out" button: redundant on mobile
+     since the popup auto-opens, and tapping it just toggles popup off. */
+  .btn-popout{display:none}
+}
+@media (max-width:980px) and (display-mode:standalone){
+  /* iOS PWA: respect the safe-area inset (notch / dynamic island) */
+  .float-panel{top:calc(8px + env(safe-area-inset-top))}
+}

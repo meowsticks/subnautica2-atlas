@@ -92,6 +92,8 @@ window.checkForUpdates = checkForUpdates;
 
 // =========== BOOT ===========
 spawnParticles();
+if(window.initFloatPanel) window.initFloatPanel();
+if(window.initWhatsNew) window.initWhatsNew();
 loadState().then(()=>{
   // v3.4: panzoom enables pan + Ctrl-scroll-zoom on the canvas
   if(window.initPanzoom) window.initPanzoom();

@@ -7,6 +7,9 @@ let completed = new Set();
 let selectedId = null;
 let lastActiveEra = 0;
 let points = 0;
+// v3.7.1: track most-recent click for double-click-to-allocate
+let _lastDblClickTime = 0;
+let _lastDblClickId = null;
 
 // ---------- POINTS ECONOMY ----------
 // Each node costs points to acquire. Keystones cost more.
@@ -190,6 +193,7 @@ function renderNodes(){
       n.id === suggestedId ? 'suggested' : '',
     ].filter(Boolean).join(' ');
     el.className = `node ${n.type} ${state} ${extra}`.trim();
+    if(n.newIn === VERSION) el.classList.add('newly-added');
     el.style.left = n.x+'px';
     el.style.top = n.y+'px';
     el.dataset.nodeId = n.id;
@@ -200,6 +204,19 @@ function renderNodes(){
       if(window.spawnSonarRipple) window.spawnSonarRipple(rect.left + rect.width/2, rect.top + rect.height/2);
       playBubblePop();
       selectNode(n.id);
+      // v3.7.1: double-click / double-tap allocates (or refunds) the node,
+      // so the player can power-through the tree without going through the
+      // panel button each time. Works for mouse and touch — `click` fires on
+      // both, and we count two within DOUBLE_CLICK_MS on the same node.
+      const now = Date.now();
+      if(_lastDblClickId === n.id && (now - _lastDblClickTime) < 350){
+        toggleNode(n.id);
+        _lastDblClickTime = 0;
+        _lastDblClickId = null;
+      } else {
+        _lastDblClickTime = now;
+        _lastDblClickId = n.id;
+      }
     };
     el.innerHTML = `
       <div class="node-hex">
@@ -210,6 +227,7 @@ function renderNodes(){
       </div>
       ${n.type==='keystone' ? `<div class="node-tier-badge">KEYSTONE</div>` : ''}
       ${n.type==='notable' ? `<div class="node-tier-badge">NOTABLE</div>` : ''}
+      ${n.newIn === VERSION ? `<div class="node-new-flag" aria-label="New in ${VERSION}">NEW</div>` : ''}
     `;
     container.appendChild(el);
   });
@@ -305,6 +323,13 @@ function renderPanel(){
     <div class="section-label section-quests"><span class="wiki-marker">▶</span> Quest Hooks</div>
     ${n.quests.map(q=>`<div class="wiki-item wiki-quest">${q}</div>`).join('')}` : '';
   const refreshNote = n.needsRefresh ? `<div class="wiki-refresh">⟲ This entry is flagged for community refresh — atlas-updater will web-source the latest SN2 specifics.</div>` : '';
+  const isNew = n.newIn === VERSION;
+  const newPill = isNew ? `<span class="new-pill" title="Added in ${VERSION}">✦ NEW in ${VERSION}</span>` : '';
+  const newCallout = isNew ? `
+    <div class="new-callout">
+      <span class="new-callout-icon">✦</span>
+      <div><strong>New entry — must-read.</strong> Fresh locations, resources, quest hooks, and tips below. Skim every section before you set out.</div>
+    </div>` : '';
   const categoryBadge = n.category ? `<span class="category-badge category-${n.category}">${n.category}</span>` : '';
   const cost = nodeCost(n);
   const canAfford = completed.has(n.id) || points >= cost;
@@ -320,10 +345,11 @@ function renderPanel(){
   panel.innerHTML = `
     ${suggestedBannerHtml}
     <div class="node-tier">${era ? era.roman + ' · ' + era.title.toUpperCase() : ''}</div>
-    <h2>${n.title} ${savedBadge}</h2>
+    <h2>${n.title} ${savedBadge} ${newPill}</h2>
     <span class="node-type-badge ${n.type}">${n.type}</span>
     ${categoryBadge}
     <p class="desc">${n.desc}</p>
+    ${newCallout}
     ${refreshNote}
     ${depsHtml}
     ${locationsHtml}
@@ -332,8 +358,11 @@ function renderPanel(){
     ${tipsHtml}
     <div class="panel-actions">
       <button class="btn ${actionClass}" onclick="toggleNode('${n.id}')" ${actionDisabled}>${actionLabel}</button>
+      <button class="btn btn-popout" onclick="toggleFloatMode()" type="button" title="Open intel in a draggable window">⧉ Pop Out Intel</button>
     </div>
   `;
+  // v3.6: mirror to the floating panel if it's currently open
+  if(window.mirrorToFloatPanel) window.mirrorToFloatPanel();
 }
 
 function updateActiveEraIndicator(){
@@ -363,6 +392,9 @@ function selectNode(id){
   saveSelected();
   // v3.5: refresh the chat drawer's context line if it's open
   if(window.updateChatContext) window.updateChatContext();
+  // v3.6: let the floating intel window auto-open (mobile) / sync (desktop).
+  // It decides whether to show itself based on viewport + user preference.
+  if(window.onNodeSelected) window.onNodeSelected();
 }
 
 async function toggleNode(id){

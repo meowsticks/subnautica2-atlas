@@ -91,6 +91,7 @@
     <button class="btn toggle" id="soundBtn" onclick="toggleSound()">♪ Sound: Off</button>
     <button class="btn toggle" id="tree3dBtn" onclick="toggle3D()">◈ 3D View</button>
     <button class="btn" id="resetZoomBtn" onclick="resetPanzoom()">⊕ Reset Zoom</button>
+    <button class="btn whats-new-btn" id="whatsNewBtn" onclick="toggleWhatsNew()" type="button" title="See what's new in this version">✦ What's New</button>
     <button class="btn install-btn" id="installAppBtn" onclick="installApp()" hidden>⤓ Install App</button>
     <button class="btn" id="updateBtn" onclick="checkForUpdates()">⟲ Check for Updates</button>
     <button class="btn danger" onclick="resetProgress()">Reset</button>
@@ -129,6 +130,20 @@
   <div class="update-content" id="updateContent"></div>
 </div>
 
+</div>
+
+<!-- v3.7.1 What's New popup: spotlights nodes added in the latest atlas
+     version. Auto-opens on first visit after a version bump; afterwards
+     opened on demand via the ✦ What's New header button. -->
+<div class="whats-new-panel" id="whatsNewPanel" role="dialog" aria-label="What's new" hidden>
+  <header class="whats-new-header">
+    <span class="whats-new-title">✦ What's New in <span id="whatsNewVersion">v?.?.?</span></span>
+    <button class="whats-new-close" id="whatsNewCloseBtn" type="button" onclick="hideWhatsNew()" aria-label="Close">×</button>
+  </header>
+  <div class="whats-new-body" id="whatsNewBody"></div>
+  <footer class="whats-new-footer">
+    <button class="btn" type="button" onclick="markVersionSeen()">Got it · Mark as seen</button>
+  </footer>
 </div>
 
 <!-- v3.6 floating node-intel window: pops up when a node is selected so the
@@ -177,6 +192,7 @@
 <script src="js/tree3d.js"></script>
 <script src="js/chat.js"></script>
 <script src="js/float-panel.js"></script>
+<script src="js/whats-new.js"></script>
 <script src="js/main.js"></script>
 
 <script>

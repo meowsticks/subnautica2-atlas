@@ -2,7 +2,7 @@
    Strategy: cache-first for app shell + CDN libs, network passthrough for
    Anthropic API. Bump CACHE_VERSION on each release to evict stale caches. */
 
-const CACHE_VERSION = 'atlas-v3.7.1-dblclick';
+const CACHE_VERSION = 'atlas-v3.7.2-whats-new';
 const APP_SHELL = [
   './',
   './index.html',
@@ -23,6 +23,7 @@ const APP_SHELL = [
   './js/tree3d.js',
   './js/chat.js',
   './js/float-panel.js',
+  './js/whats-new.js',
   './js/main.js',
   './assets/logo.svg',
   './assets/icon-192.png',

@@ -193,6 +193,7 @@ function renderNodes(){
       n.id === suggestedId ? 'suggested' : '',
     ].filter(Boolean).join(' ');
     el.className = `node ${n.type} ${state} ${extra}`.trim();
+    if(n.newIn === VERSION) el.classList.add('newly-added');
     el.style.left = n.x+'px';
     el.style.top = n.y+'px';
     el.dataset.nodeId = n.id;
@@ -226,6 +227,7 @@ function renderNodes(){
       </div>
       ${n.type==='keystone' ? `<div class="node-tier-badge">KEYSTONE</div>` : ''}
       ${n.type==='notable' ? `<div class="node-tier-badge">NOTABLE</div>` : ''}
+      ${n.newIn === VERSION ? `<div class="node-new-flag" aria-label="New in ${VERSION}">NEW</div>` : ''}
     `;
     container.appendChild(el);
   });
@@ -321,6 +323,13 @@ function renderPanel(){
     <div class="section-label section-quests"><span class="wiki-marker">▶</span> Quest Hooks</div>
     ${n.quests.map(q=>`<div class="wiki-item wiki-quest">${q}</div>`).join('')}` : '';
   const refreshNote = n.needsRefresh ? `<div class="wiki-refresh">⟲ This entry is flagged for community refresh — atlas-updater will web-source the latest SN2 specifics.</div>` : '';
+  const isNew = n.newIn === VERSION;
+  const newPill = isNew ? `<span class="new-pill" title="Added in ${VERSION}">✦ NEW in ${VERSION}</span>` : '';
+  const newCallout = isNew ? `
+    <div class="new-callout">
+      <span class="new-callout-icon">✦</span>
+      <div><strong>New entry — must-read.</strong> Fresh locations, resources, quest hooks, and tips below. Skim every section before you set out.</div>
+    </div>` : '';
   const categoryBadge = n.category ? `<span class="category-badge category-${n.category}">${n.category}</span>` : '';
   const cost = nodeCost(n);
   const canAfford = completed.has(n.id) || points >= cost;
@@ -336,10 +345,11 @@ function renderPanel(){
   panel.innerHTML = `
     ${suggestedBannerHtml}
     <div class="node-tier">${era ? era.roman + ' · ' + era.title.toUpperCase() : ''}</div>
-    <h2>${n.title} ${savedBadge}</h2>
+    <h2>${n.title} ${savedBadge} ${newPill}</h2>
     <span class="node-type-badge ${n.type}">${n.type}</span>
     ${categoryBadge}
     <p class="desc">${n.desc}</p>
+    ${newCallout}
     ${refreshNote}
     ${depsHtml}
     ${locationsHtml}

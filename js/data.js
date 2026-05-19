@@ -350,7 +350,7 @@ const NODES = [
    resources:['Battery charge (Basic Battery, fabricated at the Lifepod fabricator)','Story flag: Bio Lab activation','PDA scans of Alterra Welcome Center terminals (lore)'],
    quests:['Reach the Welcome Center within your first 2-3 oxygen cycles','Power the central terminal with a Basic Battery','Bring back a second battery for the Lifepod fabricator','Listen for the NoA signal that unlocks Camp One after the Welcome Center is powered'],
    tips:['Power the terminal first — Bio Lab + Dash Biomod gate behind this','Drop a Habitat Beacon at the door so you can find it from anywhere','Carry a spare Basic Battery — the run is shorter than you think','Co-op: any party member can power the Welcome Center — credit shares across the crew'],
-   x:1100, y:170, deps:['start']},
+   x:1100, y:170, deps:['start'], newIn:'v3.7.0'},
 
   {id:'t1_silver', title:'Silver Deposits', tier:1, type:'normal', icon:'ore',
    category:'resource',
@@ -358,13 +358,13 @@ const NODES = [
    locations:['Sandstone outcrops on the Kelp Forest seafloor','Cave walls 40-80m down (carry a flashlight or scan from the Seaglide)','Denser along the Coral Gardens transition'],
    resources:['Silver (raw)','Silver Ore → Wiring Kit, Battery upgrades, Standard Air Tank','Required for: Standard Air Tank, Wiring Kit, Computer Chip, Power Cell, most Tier-2 electronics'],
    tips:['Stockpile 6+ silver before pushing past 80m — Wiring Kits eat them fast','Easier to spot at night — the deposits glint under the flashlight','Co-op: silver bottlenecks the Wiring Kit supply, share aggressively','Pair runs with quartz expeditions — same depth band'],
-   x:600, y:170, deps:['t1_shallows_biome']},
+   x:600, y:170, deps:['t1_shallows_biome'], newIn:'v3.7.0'},
 
   {id:'t1_biomod_dash', title:'Dash Biomod', tier:1, type:'keystone', icon:'power',
    category:'biomod',
    desc:'The first and most essential Biomod — a short burst of swim acceleration. Required to outrun Predator-tier creatures (Marrowbreach, Collector spawns). Crafted at the Bio Lab once the Welcome Center is powered.',
    tips:['Equip BEFORE leaving the Kelp Forest — most Predators outrun a bare diver','Short cooldown, recharges from inhaled oxygen','Stacks with Seaglide — Dash + glide = escape velocity','Triggers on the Predator pulse warning — Dash on cue, not after','Co-op: every crewmate should craft one — solo Dash strands the group'],
-   x:1300, y:430, deps:['t1_mission_welcome']},
+   x:1300, y:430, deps:['t1_mission_welcome'], newIn:'v3.7.0'},
 
   // ---------- TIER 2 — Bio Lab + gold/lithium + Digestion biomod + first Forward Outpost ----------
   {id:'t2_bio_lab', title:'Mission: Bio Lab Online', tier:2, type:'keystone', icon:'quest_flag',
@@ -374,7 +374,7 @@ const NODES = [
    resources:['Bio Lab crafting access (game-wide unlock)','Biomod recipe slots (Dash, Digestion Adaptation, Predator scans)','Lore terminals on the Proteavirus origin'],
    quests:['Scan all four Bio Lab terminals for the Proteavirus background','Craft your first Biomod (Dash recommended)','Open the Biomod recipe panel — note which scans you still need'],
    tips:['Bio Lab gates the entire Biomod tree — visit it early','Some recipes require creature scans — get the Scanner online first','Co-op: any crewmate crafting a Biomod consumes shared inventory — coordinate'],
-   x:1100, y:540, deps:['t1_mission_welcome','t2_scanner']},
+   x:1100, y:540, deps:['t1_mission_welcome','t2_scanner'], newIn:'v3.7.0'},
 
   {id:'t2_gold', title:'Gold Deposits', tier:2, type:'normal', icon:'ore',
    category:'resource',
@@ -382,13 +382,13 @@ const NODES = [
    locations:['Coral Gardens seafloor (denser than Kelp Forest)','Sandstone outcrops near the Graveyard Spires','Inside Alien Ruins chambers (lore-relevant veins)'],
    resources:['Gold (raw)','Required for: Tadpole Storage Module, Sonar Module, Defense Module, Modification Station upgrades, most Wiring Kits past Tier-2'],
    tips:['One full Coral Gardens loop = 4-6 gold if you know the route','Pair with the Seaglide — gold is too scattered to walk between deposits','Co-op: split the Coral Gardens into wedges per crewmate, regroup at base'],
-   x:950, y:540, deps:['t2_kelp_biome']},
+   x:950, y:540, deps:['t2_kelp_biome'], newIn:'v3.7.0'},
 
   {id:'t2_biomod_digest', title:'Digestion Adaptation Biomod', tier:2, type:'notable', icon:'power',
    category:'biomod',
    desc:'Eat native Proteus flora and fauna without Digestive Incompatibility starving you. Crafted at the Bio Lab after solving the Angel Comb puzzle in the Alien Ruins.',
    tips:['Without it, native fauna gives zero nutrition — Reginald + Marblemelon only','Unlocks every Sulfur-zone organic food chain','Recipe gates behind the Angel Comb puzzle (Tier 3 quest)','Once equipped, you can eat Lucifer Rotsac and other glow-fauna for huge energy','Co-op: each crewmate needs their own — the buff is per-player'],
-   x:1300, y:760, deps:['t2_bio_lab']},
+   x:1300, y:760, deps:['t2_bio_lab'], newIn:'v3.7.0'},
 
   {id:'h_coral_outpost', title:'Coral Gardens Forward Outpost', tier:2, type:'notable', icon:'outpost',
    category:'habitat',
@@ -397,7 +397,7 @@ const NODES = [
    resources:['Required pieces: Multipurpose Room, Hatch, Fabricator, 1-2 Lockers, Bioreactor','Recommended: window panel for spotting Marrowbreach, Beacon for navigation','Total cost: ~30 Titanium, 6 Quartz, 4 Silver — one Seaglide trip'],
    quests:['Stage two batteries here before your Old Habitat run','Drop a Beacon so the rest of the crew can find it'],
    tips:['One Bioreactor + cached Reginald = power-stable through the night','Don\'t over-build — this is a refuel post, not a home','Co-op: shared Forward Outpost cuts an hour off Coral Gardens scanning runs','Once you scan the Alien Ruins, this becomes your Resonator-crafting workshop'],
-   x:750, y:900, deps:['t2_kelp_biome','t1_habitat']},
+   x:750, y:900, deps:['t2_kelp_biome','t1_habitat'], newIn:'v3.7.0'},
 
   // ---------- TIER 3 — Diamond, Sonic Resonator gear, Angel Comb puzzle quest ----------
   {id:'t3_diamond', title:'Diamond & Magnetite', tier:3, type:'normal', icon:'ore',
@@ -406,7 +406,7 @@ const NODES = [
    locations:['Alien Ruins floor caves (carry a flashlight — the chamber lights are unreliable)','Coral Gardens deeper cave systems below 180m','Some Sulfur Pyres ledges (heat-risk — Stillsuit recommended)'],
    resources:['Diamond (raw)','Magnetite (raw)','Required for: Sonic Resonator, Tadpole Depth MK1 + MK2, Power Cell upgrade, Stillsuit reinforcement'],
    tips:['Diamond spawns are PER-RUN — scan the cave first, mine on the second pass to budget oxygen','Magnetite throws off the compass — re-bearing before you swim out','Co-op: one crewmate scans, one mines, one carries — bring the Tadpole'],
-   x:850, y:1100, deps:['t3_grand_reef']},
+   x:850, y:1100, deps:['t3_grand_reef'], newIn:'v3.7.0'},
 
   {id:'t3_resonator', title:'Sonic Resonator', tier:3, type:'keystone', icon:'tool',
    category:'gear',
@@ -415,7 +415,7 @@ const NODES = [
    resources:['Sonic Resonator (handheld tool)','Unlocks: Angel Comb puzzle, Resonator-gated Alien Ruins chambers, Tadpole Sonar puzzle interactions'],
    quests:['Scan the Resonator pedestal in the Alien Ruins','Craft the Resonator and return to the Angel Comb chamber','Use the Resonator on the locked Sulfur Pyres outer ring door'],
    tips:['Carry always — half the Alien Ruins gates behind a Resonator pulse','Battery-powered — keep a spare in your dive locker','Some Tadpole Sonar pings unlock matching Resonator interactions','Co-op: only one Resonator per door — coordinate the lead'],
-   x:1100, y:1100, deps:['t3_grand_reef','t3_modstation']},
+   x:1100, y:1100, deps:['t3_grand_reef','t3_modstation'], newIn:'v3.7.0'},
 
   {id:'t3_mission_angel', title:'Mission: Angel Comb Puzzle', tier:3, type:'notable', icon:'quest_flag',
    category:'quest',
@@ -424,7 +424,7 @@ const NODES = [
    resources:['Digestion Adaptation Biomod recipe (unlocks at Bio Lab on solve)','Alien Ruins lore terminal scan','Story flag: Proteavirus mid-arc'],
    quests:['Bring the Sonic Resonator and a full O2 tank','Match the four Angel Comb glyphs in the order shown on the central terminal','Return to the Bio Lab to craft Digestion Adaptation'],
    tips:['Mark the glyph order on a Habitat Beacon name before swimming back','Heat damage rises near the Sulfur Pyres edge — Stillsuit if you can craft it','Co-op: one player triggers, one watches the terminal, one keeps the Tadpole running'],
-   x:1300, y:1200, deps:['t3_resonator','t2_bio_lab']},
+   x:1300, y:1200, deps:['t3_resonator','t2_bio_lab'], newIn:'v3.7.0'},
 
   // ---------- TIER 4 — Tadpole chassis variants + kyanite + heat-resist gear ----------
   {id:'v_scout_chassis', title:'Tadpole ScoutRay Chassis', tier:4, type:'notable', icon:'seamoth',
@@ -434,7 +434,7 @@ const NODES = [
    resources:['Crafted from: 2 Gold, 3 Magnetite, 4 Silicone, 1 Wiring Kit','Slots in over the base Tadpole chassis at the Moonpool','Stacks with Depth MK1/2 modules'],
    quests:['Scan all three ScoutRay fragments inside the Tadpole Pens','Return to the MVB and craft the chassis','Use ScoutRay for the Sparse Plains Cicada Wreck run'],
    tips:['Best chassis for scouting, scanning, and outrunning predators','Trades cargo for speed — slot Storage Module first to compensate','Pairs with Swim Charge Fins on dismount for full mobility','Co-op: ScoutRay scouts ahead, Haul follows with cargo'],
-   x:300, y:1500, deps:['t4_seamoth','t2_gold']},
+   x:300, y:1500, deps:['t4_seamoth','t2_gold'], newIn:'v3.7.0'},
 
   {id:'v_haul_chassis', title:'Tadpole Haul Chassis', tier:4, type:'notable', icon:'seamoth',
    category:'vehicle',
@@ -443,7 +443,7 @@ const NODES = [
    resources:['Crafted from: 3 Gold, 2 Diamond, 6 Titanium Ingot, 2 Wiring Kit','Adds 3 passenger seats and triple the Storage Module capacity','Loses ~30% speed vs base chassis — Sonar Module strongly recommended'],
    quests:['Reach the Cicada Wreck (Sparse Plains run — Collector Leviathan range)','Scan all three Haul fragments among the cargo containers','Return to the MVB and craft the chassis'],
    tips:['The ONLY way to bring a 4-player party along a single Tadpole','Slot Defense Module before the Cicada Wreck run — Collector range','Cargo pods stay attached to your base when chassis-swapping','Co-op: Haul ferries the team, ScoutRay scouts the route'],
-   x:1100, y:1500, deps:['t4_seamoth','t4_storage','t4_blood_kelp']},
+   x:1100, y:1500, deps:['t4_seamoth','t4_storage','t4_blood_kelp'], newIn:'v3.7.0'},
 
   {id:'t4_kyanite', title:'Kyanite & Raw Sulfur', tier:4, type:'normal', icon:'ore',
    category:'resource',
@@ -451,7 +451,7 @@ const NODES = [
    locations:['Sulfur Pyres thermal columns (heat damage — bring coolant or Stillsuit)','Kyanite crystal clusters at 350-450m depth inside the Pyres','Raw Sulfur from the sulfur-rich seabed around the central vents'],
    resources:['Kyanite (raw, heat-resistant)','Raw Sulfur (alchemy reagent)','Required for: Tadpole Depth MK2, Stillsuit, Thermal Power Plant, Seafrog Drill Arm'],
    tips:['Cool down between mining sessions — heat stacks and overcooks your tank','Stillsuit + Tadpole Depth MK1 = safe extended Pyres runs','Co-op: one player tanks heat with the Stillsuit, others mine in the safe ring','Stockpile 8 Kyanite before MK2 — it eats the budget fast'],
-   x:850, y:1620, deps:['t4_mountain_island']},
+   x:850, y:1620, deps:['t4_mountain_island'], newIn:'v3.7.0'},
 
   {id:'t4_stillsuit', title:'Stillsuit (Heat-Resistant)', tier:4, type:'notable', icon:'fins',
    category:'gear',
@@ -459,7 +459,7 @@ const NODES = [
    locations:['Crafted at the Modification Station inside your base','Blueprint scan: data terminal inside the Sulfur Pyres central chamber','Recipe: 4 Kyanite, 3 Fibrous Pulp, 2 Silicone Rubber, 1 Wiring Kit'],
    resources:['Heat resistance: full negation up to 200°C ambient','Water recycling: produces ~1 filtered water per 8 minutes of wear','Required for: Sulfur Pyres long-stays, deep Kyanite runs, Thermal Plant deployment'],
    tips:['Wear before crossing the Pyres column rings — heat ticks add up fast','Pairs with the Tadpole — bake in the Pyres on the outside, refuge inside','Recycled water is a slow drip — still carry filtered backups','Co-op: one Stillsuit per crewmate or pair-tag in safer outer rings'],
-   x:1100, y:1620, deps:['t4_kyanite','t3_modstation']},
+   x:1100, y:1620, deps:['t4_kyanite','t3_modstation'], newIn:'v3.7.0'},
 
   // ---------- TIER 5 — Thermal forward base + Void mission ----------
   {id:'h_thermal_base', title:'Sulfur Pyres Thermal Base', tier:5, type:'notable', icon:'thermal',
@@ -469,7 +469,7 @@ const NODES = [
    resources:['Required pieces: 2 Multipurpose Rooms, Thermal Power Plant, Modification Station, Fabricator, 3 Lockers','Recommended: Moonpool for in-bay chassis swaps, Scanner Station for endgame fragments','Total cost: ~80 Titanium Ingot, 8 Kyanite, 6 Gold, 4 Diamond, 2 Wiring Kit'],
    quests:['Survive a full day-night cycle inside the base','Run the Thermal Plant continuously for 24 hours','Stage the first Sparse Plains Cicada Wreck expedition from here'],
    tips:['Stillsuit + Tadpole Defense Module is the minimum kit before this push','Pre-stage power cells — the run home if power fails is brutal','Co-op: 4-player base supports a shared Trident hangar (once it releases)','From here, the Red Grass Mesa and the Void are one Tadpole hop away'],
-   x:1100, y:2150, deps:['t5_thermal','h_coral_outpost']},
+   x:1100, y:2150, deps:['t5_thermal','h_coral_outpost'], newIn:'v3.7.0'},
 
   {id:'t5_mission_void', title:'Mission: Void Approach', tier:5, type:'keystone', icon:'quest_flag',
    category:'quest',
@@ -478,7 +478,7 @@ const NODES = [
    resources:['Trident (post-launch vehicle) — silent running, decoys, multi-crew','Pre-staged power cells (3+ spares)','Tadpole Defense Module + Stillsuit + every Biomod equipped','Two crewmates minimum for spotter / pilot roles'],
    quests:['Scan a Shiver Leviathan from beyond aggro range','Reach the story-critical Void beat (Early Access roadmap)','Return alive — survival itself is the deliverable'],
    tips:['NEVER engage — Shivers one-shot the Tadpole and outpace the Trident in close','Pre-route an exit and mark it with a Beacon — the Void has no landmarks','Decoys + Silent Running is the only viable approach pattern','Co-op: spotter on sonar, pilot on silent running, gunner on decoys'],
-   x:800, y:2250, deps:['t5_cyclone','t5_lava_zone']},
+   x:800, y:2250, deps:['t5_cyclone','t5_lava_zone'], newIn:'v3.7.0'},
 ];
 
 window.NODES = NODES;

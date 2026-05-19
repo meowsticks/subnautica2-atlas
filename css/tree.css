@@ -555,6 +555,211 @@
 .category-badge.category-habitat{color:var(--silver);background:rgba(184,197,214,0.12);border:1px solid rgba(184,197,214,0.3)}
 .category-badge.category-biomod{color:#7dd3fc;background:rgba(125,211,252,0.12);border:1px solid rgba(125,211,252,0.3)}
 
+/* =========== NEW-NODE SPOTLIGHT (v3.7.1) ===========
+   Surfaces nodes added in the current VERSION so players notice the batch:
+   - corner flag on the node hex (tree)
+   - pill in the panel title row
+   - "must-read" callout below the description */
+.node.newly-added .node-hex{
+  box-shadow:0 0 0 1px var(--gold), 0 0 18px rgba(255,179,71,0.45);
+}
+.node-new-flag{
+  position:absolute;
+  top:-6px; right:-8px;
+  background:linear-gradient(90deg, var(--gold) 0%, var(--kraken) 100%);
+  color:#0a1929;
+  font-family:'Rajdhani',sans-serif;
+  font-weight:900;
+  font-size:9px;
+  letter-spacing:0.18em;
+  padding:2px 6px;
+  border-radius:3px;
+  z-index:6;
+  pointer-events:none;
+  animation:newFlagPulse 2.4s ease-in-out infinite;
+  text-shadow:0 1px 0 rgba(0,0,0,0.15);
+}
+@keyframes newFlagPulse{
+  0%,100%{box-shadow:0 0 6px rgba(255,179,71,0.5)}
+  50%{box-shadow:0 0 14px var(--kraken), 0 0 6px var(--gold)}
+}
+.new-pill{
+  display:inline-block;
+  vertical-align:middle;
+  margin-left:6px;
+  font-family:'Rajdhani',sans-serif;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  padding:3px 8px;
+  border-radius:3px;
+  color:#0a1929;
+  background:linear-gradient(90deg, var(--gold) 0%, var(--kraken) 100%);
+  white-space:nowrap;
+}
+.new-callout{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  margin:14px 0 18px;
+  padding:12px 14px;
+  background:linear-gradient(90deg, rgba(255,179,71,0.10), rgba(255,107,53,0.06));
+  border-left:3px solid var(--gold);
+  border-radius:0 4px 4px 0;
+  font-size:13px;
+  line-height:1.5;
+  color:var(--text);
+}
+.new-callout-icon{
+  flex-shrink:0;
+  color:var(--gold);
+  font-size:16px;
+  line-height:1;
+  margin-top:1px;
+}
+
+/* Header "✦ What's New" button — gold, dims when version is acknowledged */
+.btn.whats-new-btn{
+  color:var(--gold);
+  border-color:var(--gold);
+}
+.btn.whats-new-btn::before{background:var(--gold)}
+.btn.whats-new-btn:hover{box-shadow:0 0 18px rgba(255,179,71,0.4)}
+
+/* =========== WHAT'S NEW POPUP =========== */
+.whats-new-panel{
+  position:fixed;
+  z-index:80;
+  top:50%; left:50%;
+  transform:translate(-50%, -50%);
+  width:min(640px, calc(100vw - 32px));
+  max-height:calc(100vh - 64px);
+  display:flex;
+  flex-direction:column;
+  background:linear-gradient(180deg, rgba(13,40,71,0.96), rgba(5,18,38,0.98));
+  border:1px solid var(--gold);
+  border-radius:8px;
+  box-shadow:0 24px 80px rgba(0,0,0,0.7), 0 0 60px rgba(255,179,71,0.18);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  overflow:hidden;
+  animation:whatsNewIn 0.22s ease-out;
+}
+.whats-new-panel[hidden]{display:none}
+@keyframes whatsNewIn{from{opacity:0;transform:translate(-50%, -50%) scale(0.96)}to{opacity:1;transform:translate(-50%, -50%) scale(1)}}
+
+.whats-new-header{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 18px;
+  background:linear-gradient(180deg, rgba(255,179,71,0.18), rgba(255,179,71,0.04));
+  border-bottom:1px solid rgba(255,179,71,0.4);
+  flex-shrink:0;
+}
+.whats-new-title{
+  flex:1;
+  font-family:'Cinzel',serif;
+  font-weight:700;
+  font-size:16px;
+  letter-spacing:0.08em;
+  color:var(--gold);
+}
+.whats-new-close{
+  background:transparent;
+  border:1px solid rgba(255,179,71,0.4);
+  color:var(--gold);
+  width:32px;height:32px;
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:4px;
+  cursor:pointer;
+  font-size:18px;
+  padding:0;
+  transition:background 0.15s;
+}
+.whats-new-close:hover{background:rgba(255,179,71,0.12)}
+
+.whats-new-body{
+  padding:18px 22px;
+  overflow-y:auto;
+  flex:1;
+  min-height:0;
+  -webkit-overflow-scrolling:touch;
+}
+.whats-new-intro{
+  margin:0 0 18px;
+  font-size:14px;
+  line-height:1.55;
+  color:var(--text);
+}
+.whats-new-intro strong{color:var(--gold)}
+.whats-new-empty{color:var(--text-dim);text-align:center;padding:30px 10px;font-style:italic}
+
+.whats-new-section{margin-bottom:18px}
+.whats-new-section:last-child{margin-bottom:0}
+.whats-new-section-title{
+  font-family:'Rajdhani',sans-serif;
+  font-weight:700;
+  font-size:11px;
+  letter-spacing:0.28em;
+  text-transform:uppercase;
+  color:var(--bio);
+  margin:0 0 10px;
+  padding-bottom:4px;
+  border-bottom:1px solid var(--bio-dim);
+}
+.whats-new-section-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+@media (max-width:560px){.whats-new-section-grid{grid-template-columns:1fr}}
+.whats-new-item{
+  text-align:left;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--bio-dim);
+  border-left:3px solid var(--gold);
+  color:var(--text);
+  padding:10px 12px;
+  border-radius:0 4px 4px 0;
+  cursor:pointer;
+  font-family:inherit;
+  transition:background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.whats-new-item:hover{background:rgba(0,229,255,0.06);border-color:var(--bio)}
+.whats-new-item:active{transform:scale(0.99)}
+.whats-new-item-head{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.whats-new-tier{
+  font-family:'Cinzel',serif;font-weight:900;font-size:10px;
+  letter-spacing:0.15em;
+  color:var(--gold);
+  padding:2px 6px;
+  border:1px solid rgba(255,179,71,0.3);
+  border-radius:2px;
+}
+.whats-new-item strong{font-family:'Rajdhani',sans-serif;font-size:14px;color:var(--bio)}
+.whats-new-desc{font-size:12px;line-height:1.45;color:var(--text-dim)}
+
+.whats-new-footer{
+  padding:12px 18px;
+  border-top:1px solid var(--bio-dim);
+  display:flex;justify-content:flex-end;
+  flex-shrink:0;
+  background:rgba(5,18,38,0.6);
+}
+
+/* Mobile: take the full screen — easier to read each card */
+@media (max-width:980px){
+  .whats-new-panel{
+    top:8px;left:8px;right:8px;bottom:8px;
+    width:auto;height:auto;
+    transform:none;
+    max-height:none;
+  }
+  @keyframes whatsNewIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+  .whats-new-body{padding:14px 16px}
+  .whats-new-section-grid{grid-template-columns:1fr}
+}
+
 /* Refresh note — flagged content that needs SN2 community sourcing */
 .wiki-refresh{
   margin:10px 0 16px;

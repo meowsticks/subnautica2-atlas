@@ -7,6 +7,9 @@ let completed = new Set();
 let selectedId = null;
 let lastActiveEra = 0;
 let points = 0;
+// v3.7.1: track most-recent click for double-click-to-allocate
+let _lastDblClickTime = 0;
+let _lastDblClickId = null;
 
 // ---------- POINTS ECONOMY ----------
 // Each node costs points to acquire. Keystones cost more.
@@ -200,6 +203,19 @@ function renderNodes(){
       if(window.spawnSonarRipple) window.spawnSonarRipple(rect.left + rect.width/2, rect.top + rect.height/2);
       playBubblePop();
       selectNode(n.id);
+      // v3.7.1: double-click / double-tap allocates (or refunds) the node,
+      // so the player can power-through the tree without going through the
+      // panel button each time. Works for mouse and touch — `click` fires on
+      // both, and we count two within DOUBLE_CLICK_MS on the same node.
+      const now = Date.now();
+      if(_lastDblClickId === n.id && (now - _lastDblClickTime) < 350){
+        toggleNode(n.id);
+        _lastDblClickTime = 0;
+        _lastDblClickId = null;
+      } else {
+        _lastDblClickTime = now;
+        _lastDblClickId = n.id;
+      }
     };
     el.innerHTML = `
       <div class="node-hex">

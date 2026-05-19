@@ -66,7 +66,7 @@
   background-size:40px 40px;
   pointer-events:none;
 }
-.tree-canvas{position:relative;width:1500px;height:2200px}
+.tree-canvas{position:relative;width:1500px;height:2400px}
 
 /* ERA BANNERS */
 .era-banner{
@@ -549,6 +549,11 @@
 .category-badge.category-quest{color:var(--kraken);background:rgba(255,107,53,0.15)}
 .category-badge.category-wreck{color:var(--silver);background:rgba(184,197,214,0.1)}
 .category-badge.category-tech{color:var(--bio);background:var(--bio-dim)}
+/* v3.7 progression-expansion categories */
+.category-badge.category-gear{color:var(--bio);background:rgba(0,229,255,0.1);border:1px solid var(--bio-dim)}
+.category-badge.category-vehicle{color:#c084fc;background:rgba(192,132,252,0.12);border:1px solid rgba(192,132,252,0.3)}
+.category-badge.category-habitat{color:var(--silver);background:rgba(184,197,214,0.12);border:1px solid rgba(184,197,214,0.3)}
+.category-badge.category-biomod{color:#7dd3fc;background:rgba(125,211,252,0.12);border:1px solid rgba(125,211,252,0.3)}
 
 /* Refresh note — flagged content that needs SN2 community sourcing */
 .wiki-refresh{

@@ -91,6 +91,7 @@
     <button class="btn toggle" id="soundBtn" onclick="toggleSound()">♪ Sound: Off</button>
     <button class="btn toggle" id="tree3dBtn" onclick="toggle3D()">◈ 3D View</button>
     <button class="btn" id="resetZoomBtn" onclick="resetPanzoom()">⊕ Reset Zoom</button>
+    <button class="btn install-btn" id="installAppBtn" onclick="installApp()" hidden>⤓ Install App</button>
     <button class="btn" id="updateBtn" onclick="checkForUpdates()">⟲ Check for Updates</button>
     <button class="btn danger" onclick="resetProgress()">Reset</button>
   </div>
@@ -186,6 +187,38 @@
       navigator.serviceWorker.register('sw.js').catch(() => { /* no-op */ });
     });
   }
+
+  // Desktop install prompt — Chrome / Edge fire 'beforeinstallprompt' when
+  // the page is installable. We stash the event and show our own button so
+  // the prompt fires on a user gesture. iOS Safari doesn't fire this; users
+  // there install via Share → Add to Home Screen.
+  let _deferredInstallPrompt = null;
+  const _installBtn = () => document.getElementById('installAppBtn');
+  const _alreadyInstalled = () =>
+    (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+    window.navigator.standalone === true;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    _deferredInstallPrompt = e;
+    if (!_alreadyInstalled()) {
+      const btn = _installBtn();
+      if (btn) btn.hidden = false;
+    }
+  });
+  window.addEventListener('appinstalled', () => {
+    _deferredInstallPrompt = null;
+    const btn = _installBtn();
+    if (btn) btn.hidden = true;
+  });
+  async function installApp() {
+    if (!_deferredInstallPrompt) return;
+    _deferredInstallPrompt.prompt();
+    try { await _deferredInstallPrompt.userChoice; } catch (_) {}
+    _deferredInstallPrompt = null;
+    const btn = _installBtn();
+    if (btn) btn.hidden = true;
+  }
+  window.installApp = installApp;
 </script>
 
 </body>

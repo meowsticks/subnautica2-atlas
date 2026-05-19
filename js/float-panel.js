@@ -117,9 +117,9 @@ function initFloatPanel(){
   if(!el || !header) return;
 
   document.getElementById('floatPanelClose')?.addEventListener('click', () => {
+    // Close THIS instance only — tapping another node should reopen the
+    // popup. (Use Dock to permanently switch back to the inline panel.)
     hideFloatPanel();
-    _floatState.enabled = false;
-    _floatSaveState();
   });
   document.getElementById('floatPanelDock')?.addEventListener('click', () => {
     hideFloatPanel();
